@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+{% block title %}Homepage{% endblock %}
+{% block content %}
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+<!-- organize the two divs so that they are both inside a grid -->
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="calendar">
+                <div class="month">
+                    <div class="prev">&#10094;</div>
+                    <div class="calendar-header">
+                        <h1>May</h1>
+                        <p>Friday May 29, 2020</p>
+                    </div>
+                    <div class="next">&#10095;</div>
+                </div>
+                <div class="weekdays">
+                    <div class="day">Monday</div>
+                    <div class="day">Tuesday</div>
+                    <div class="day">Wednesday</div>
+                    <div class="day">Thursday</div>
+                    <div class="day">Friday</div>
+                    <div class="day">Saturday</div>
+                    <div class="day">Sunday</div>
+                </div>
+                
+                <div class="days">
+                    <div class="prev-date"><div class="date-content">26</div></div>
+                    <div class="prev-date"><div class="date-content">27</div></div>
+                    <div class="prev-date"><div class="date-content">28</div></div>
+                    <div class="prev-date"><div class="date-content">29</div></div>
+                    <div class="prev-date"><div class="date-content">30</div></div>
+                    <div><div class="date-content">1</div></div>
+                    <div><div class="date-content">2</div></div>
+                    <div><div class="date-content">3</div></div>
+                    <div><div class="date-content">4</div></div>
+                    <div><div class="date-content">5</div></div>
+                    <div><div class="date-content">6</div></div>
+                    <div><div class="date-content">7</div></div>
+                    <div><div class="date-content">8</div></div>
+                    <div><div class="date-content">9</div></div>
+                    <div><div class="date-content">10</div></div>
+                    <div><div class="date-content">11</div></div>
+                    <div><div class="date-content">12</div></div>
+                    <div><div class="date-content">13</div></div>
+                    <div><div class="date-content">14</div></div>
+                    <div><div class="date-content">15</div></div>
+                    <div><div class="date-content">16</div></div>
+                    <div><div class="date-content">17</div></div>
+                    <div><div class="date-content">18</div></div>
+                    <div><div class="date-content">19</div></div>
+                    <div><div class="date-content">20</div></div>
+                    <div><div class="date-content">21</div></div>
+                    <div><div class="date-content">22</div></div>
+                    <div><div class="date-content">23</div></div>
+                    <div><div class="date-content">24</div></div>
+                    <div><div class="date-content">25</div></div>
+                    <div><div class="date-content">26</div></div>
+                    <div><div class="date-content">27</div></div>
+                    <div><div class="date-content">28</div></div>
+                    <div><div class="date-content">29</div></div>
+                    <div><div class="date-content">30</div></div>
+                    <div><div class="date-content">31</div></div>
+                    <div class="next-date"><div class="date-content">1</div></div>
+                    <div class="next-date"><div class="date-content">2</div></div>
+                    <div class="next-date"><div class="date-content">3</div></div>
+                    <div class="next-date"><div class="date-content">4</div></div>
+                    <div class="next-date"><div class="date-content">5</div></div>
+                    <div class="next-date"><div class="date-content">6</div></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <form method="POST">
+                <input name = "text1" class = "input-command" id="user-command" placeholder=""></input>
+            </form>                
+        </div>
+    </div>
+</div>
+<!-- create a form method that is on the right bottom side of the page-->
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+{% endblock content %}
+

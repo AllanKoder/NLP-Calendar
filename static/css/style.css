@@ -1,0 +1,125 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Roboto', sans-serif;
+
+}
+
+
+.calendar-header{
+  font-size: 100%;
+}
+
+.calendar{
+  width: 100%;
+  height: 100vh; 
+  align-items: left;
+  justify-content: left;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.15);
+}
+
+.month{
+  width: 100%;
+  height: 8rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 0 1rem;
+  background-color: rgb(247, 247, 247);
+}
+.prev,
+.next {
+  font-size: 2rem;
+  cursor: pointer;
+  color: rgb(32, 32, 32);
+
+}
+
+.month i {
+  font-size: 0.7rem;
+  cursor: pointer;
+  color: rgb(32, 32, 32);
+
+}
+/* create a css class for the month name */
+.month h1 {
+  letter-spacing: 0.2rem;
+  margin-bottom: 1rem;
+  font-size: 2rem;
+  font-weight: 400;
+  color: rgb(32, 32, 32);
+}
+
+.month p{
+  font-size: 1.1rem;
+  color: rgb(32, 32, 32);
+}
+.weekdays {
+  
+  width: 100%;
+  height: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  padding: 0 1rem;
+  outline: 0.1px solid rgb(32, 32, 32);
+  background-color: rgb(255, 255, 255);
+}
+
+/* make the text in the weekday component to center*/
+.weekdays div {
+  text-align: center;  
+  font-size: calc(1vw + 3px);
+  font-weight: 40;
+  letter-spacing: 0.1rem;
+  width: calc(100% / 7);
+  align-items: center;
+  text-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+}
+
+.days {
+  width: 100%;
+  height: calc(100vh - 10rem);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+  background-color: rgb(255, 255, 255);
+}
+
+.days div {
+  font-size: 0.9rem;
+  padding: auto auto;
+  margin: 0.1rem;
+  letter-spacing: 0.2rem; 
+  width: calc(100% / 8);
+  display: flex;
+  justify-content: center;
+  align-items: center;     
+  text-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+  outline: 1px  solid  rgb(0, 0, 0,0);
+  transition-duration: 0.5s;
+}
+.days div:hover  {
+  outline: 1px  solid  rgb(65, 65, 65);
+}
+.prev-date,
+.next-date {
+  opacity: 0.5;
+}
+
+
+
+.input-command
+{
+  width: calc(33% - 2rem);
+  position: fixed;
+  height: 40px;
+  bottom: 10px;
+  font-size: 13px;
+}
