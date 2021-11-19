@@ -1,8 +1,10 @@
 import os
 from flask import Flask, render_template, request
 
-#import the objects from the classes folder in the project directiory
+#import the objects classes in the project directiory
 from CommandInterpreter import CommandInterpreter
+
+WordDictionary = CommandInterpreter()
 
 app = Flask(__name__)
 @app.route('/')
@@ -12,9 +14,18 @@ def Home():
 @app.route('/',methods=['POST'])
 def multiply():
     if request.method == "POST":
-        number1 = request.form['text1']
+        text = request.form['command']
         try:
-            return f"<h1>product is: {float(number1)}</h1>"
+            return f"<h1>definition is: {WordDictionary.define(text)}</h1>"
+        except:
+            return ""
+        
+@app.route('/<',methods=['GET','POST'])
+def multiply():
+    if request.method == "POST":
+        text = request.form['command']
+        try:
+            return f"<h1>definition is: {WordDictionary.define(text)}</h1>"
         except:
             return ""
 '''

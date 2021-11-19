@@ -86,40 +86,48 @@
   height: calc(100vh - 10rem);
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 2rem;
+  align-items: left;
+  padding: 1px 0;
   background-color: rgb(255, 255, 255);
 }
 
 .days div {
   font-size: 0.9rem;
-  padding: auto auto;
-  margin: 0.1rem;
-  letter-spacing: 0.2rem; 
-  width: calc(100% / 8);
+  margin: 0.0rem;
+  letter-spacing: 0.1rem; 
+  text-indent: 0.3rem;
+  width: calc(100% / 7);
   display: flex;
-  justify-content: center;
-  align-items: center;     
+  justify-content: top;
+  float:left;
+  text-align: left;
   text-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
-  outline: 1px  solid  rgb(0, 0, 0,0);
+
+}
+.date-content
+{
+  outline: 0.3px  solid  rgb(0, 0, 0,0.2);
   transition-duration: 0.5s;
 }
-.days div:hover  {
-  outline: 1px  solid  rgb(65, 65, 65);
+.date-content:hover  {
+  outline: 0.3px  solid  rgb(32, 32, 32);
 }
 .prev-date,
 .next-date {
-  opacity: 0.5;
+  opacity: 0.7;
+  -webkit-text-fill-color: white; 
+  /* Will override color (regardless of order) */ 
+  -webkit-text-stroke-width: 0.7px; 
+  -webkit-text-stroke-color: black;
 }
 
 
 
 .input-command
 {
-  width: calc(33% - 2rem);
   position: fixed;
   height: 40px;
+  width: auto;
   bottom: 10px;
   font-size: 13px;
 }
