@@ -1,6 +1,9 @@
 import os
 from flask import Flask, render_template, request
 
+#import the objects from the classes folder in the project directiory
+from CommandInterpreter import CommandInterpreter
+
 app = Flask(__name__)
 @app.route('/')
 def Home():
