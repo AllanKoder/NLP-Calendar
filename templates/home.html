@@ -4,85 +4,42 @@
 <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
 <!-- organize the two divs so that they are both inside a grid -->
 <div class="container-fluid">
-    <div class="row">
-        <div style="width:66%">
+    <div class="grid-container">
+        <div class="grid-item resizable-calendar-grid">
             <div class="calendar">
                 <div class="month">
                     <div class="prev">&#10094;</div>
                     <div class="calendar-header">
-                        <h1>May</h1>
-                        <p>Friday May 29, 2020</p>
+                        <h1></h1>
+                        <p></p>
                     </div>
                     <div class="next">&#10095;</div>
                 </div>
                 <div class="weekdays">
-                    <div class="day">Monday</div>
-                    <div class="day">Tuesday</div>
-                    <div class="day">Wednesday</div>
-                    <div class="day">Thursday</div>
-                    <div class="day">Friday</div>
-                    <div class="day">Saturday</div>
-                    <div class="day">Sunday</div>
+                    <div class="day">Mon</div>
+                    <div class="day">Tue</div>
+                    <div class="day">Wed</div>
+                    <div class="day">Thu</div>
+                    <div class="day">Fri</div>
+                    <div class="day">Sat</div>
+                    <div class="day">Sun</div>
                 </div>
-                <form method="POST">
-                    <div class = "date-content">
-                        <input type="hidden" id="time">
-                        <input type="submit">
-                    </div>
-                </form>
                 <div class="days">
-                    <div class="date-content"><div class="prev-date">26</div></div>
-                    <div class="date-content"><div class="prev-date">27</div></div>
-                    <div class="date-content"><div class="prev-date">28</div></div>
-                    <div class="date-content"><div class="prev-date">29</div></div>
-                    <div class="date-content"><div class="prev-date">30</div></div>
-                    <div class="date-content"><div>1</div></div>
-                    <div class="date-content"><div>2</div></div>
-                    <div class="date-content"><div>3</div></div>
-                    <div class="date-content"><div>4</div></div>
-                    <div class="date-content"><div>5</div></div>
-                    <div class="date-content"><div>6</div></div>
-                    <div class="date-content"><div>7</div></div>
-                    <div class="date-content"><div>8</div></div>
-                    <div class="date-content"><div>9</div></div>
-                    <div class="date-content"><div>10</div></div>
-                    <div class="date-content"><div>11</div></div>
-                    <div class="date-content"><div>12</div></div>
-                    <div class="date-content"><div>13</div></div>
-                    <div class="date-content"><div>14</div></div>
-                    <div class="date-content"><div>15</div></div>
-                    <div class="date-content"><div>16</div></div>
-                    <div class="date-content"><div>17</div></div>
-                    <div class="date-content"><div>18</div></div>
-                    <div class="date-content"><div>19</div></div>
-                    <div class="date-content"><div>20</div></div>
-                    <div class="date-content"><div>21</div></div>
-                    <div class="date-content"><div>22</div></div>
-                    <div class="date-content"><div>23</div></div>
-                    <div class="date-content"><div>24</div></div>
-                    <div class="date-content"><div>25</div></div>
-                    <div class="date-content"><div>26</div></div>
-                    <div class="date-content"><div>27</div></div>
-                    <div class="date-content"><div>28</div></div>
-                    <div class="date-content"><div>29</div></div>
-                    <div class="date-content"><div>30</div></div>
-                    <div class="date-content"><div>31</div></div>
-                    <div class="date-content"><div class="next-date">1</div></div>
-                    <div class="date-content"><div class="next-date">2</div></div>
-                    <div class="date-content"><div class="next-date">3</div></div>
-                    <div class="date-content"><div class="next-date">4</div></div>
-                    <div class="date-content"><div class="next-date">5</div></div>
-                    <div class="date-content"><div class="next-date">6</div></div>
                 </div>
             </div>
         </div>
-        <div style="width:23%">
+        <div class="grid-item">
             <form method="POST">
-                <input name = "command" class = "input-command" id="user-command" placeholder=""></input>
+                <input name = "command" class = "input-command"  placeholder="">
             </form>                
         </div>
-        <div style="width:10%">
-            <h1>testing</h1>         
+        <div class="grid-item">
+            {% for date in dates %}
+                <p>{{ date.title}}</p>
+                <p>{{ date.type}}</p>
+                <p>{{ date.time}}</p> 
+                <p>{{ date.tips}}</p> 
+            {% endfor %}     
         </div>
     </div>
 </div>
