@@ -1,7 +1,7 @@
 from PyDictionary import PyDictionary
-class CommandInterpreter:
+class Dictionary:
     dictionary=PyDictionary()
-    #create functions for eac   h command type
+    #create functions for each command type
     def __init__(self):
         self.dictionary = PyDictionary()
     def interpret(self, command):

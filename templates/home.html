@@ -31,7 +31,8 @@
         <div class="grid-item">
             <form method="POST">
                 <input name = "command" class = "input-command"  placeholder="">
-            </form>                
+            </form>      
+            <button type="button" onclick="informationPrompt()" class = "helpbutton"><strong>&#x24D8;</strong></button>          
         </div>
         <div class="grid-item">
             {% for date in dates %}
@@ -44,6 +45,7 @@
     </div>
 </div>
 <script src="{{ url_for('static', filename='js/CalendarScript.js') }}"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
 
 {% endblock content %}
 

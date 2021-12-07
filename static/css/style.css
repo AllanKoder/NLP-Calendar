@@ -144,10 +144,22 @@
   position: absolute;
   bottom: 10px;
   height: 40px;
-  width: 40%;
+  width: 38%;
   font-size: 13px;
+  text-indent: 0.5rem;
 }
-
+.helpbutton
+{
+  position: absolute;
+  bottom: 10px;
+  height: 40px;
+  width: 2%;
+  font-size:25px;
+  padding-left: 10px;
+  border: none;
+  background-color: white;
+  right: 10%;
+}
 .grid-container {
   display: grid;
   grid-template-columns: 50% 40% 10%;
