@@ -3,12 +3,20 @@ import numpy as np
 import sys
 from word2number import w2n
 import re
-from stopwords import commandstopwords, stopwords
+from stopwords import commandstopwords, stopwords, subjectstopwords
 from Dictionary import Dictionary
 WordDictionary = Dictionary()
 
 class LanguageParser:
     #algorithm order: remove all the weird punctuation, filter the numbers, time, classify the command, filter the stopwords, filter the words, filter the words in the dictionary
+    def filter_words(self, text, set):
+        #words after removing all the weird punctuation
+        output = ""
+        for w in text.split(" "):
+            if w.lower() not in set:
+                output += w + " "
+        return output
+        
     def classify(self, text):
         data = pd.read_csv("KeyWordsData.csv")
         data = data[data[['Duration','Reminder']].notna()]
@@ -17,7 +25,6 @@ class LanguageParser:
         ReminderKeyWords = [x.lower().replace(" ", "") for x in data['Reminder'].tolist()]
         DurationKeyWords = [x.lower().replace(" ", "") for x in data['Duration'].tolist()]
         
-        command_stop_words = set(commandstopwords.getwords())
         stop_words = set(stopwords.getwords())
         
         ReminderScore = 0
@@ -29,11 +36,9 @@ class LanguageParser:
 
         ReminderWordMap = {}
         DurationWordMap = {}
-
-
-        for w in text.split(" "):
-            if w.lower() not in command_stop_words:
-                filtered_sentence.append(w)
+        
+        command_stop_words = set(commandstopwords.getwords())
+        filtered_sentence = self.filter_words(text, command_stop_words)
             
         for w in ReminderKeyWords:
             ReminderWordMap[w] = 1
@@ -164,13 +169,22 @@ class LanguageParser:
 
     def getSubject(self, text):
         #if there is the word in SubjectKeywords is inside the text, then get the subject before or after it: 
-        SubjectKeywords = ["for","at","after","in","on"]
+        SubjectRegexes = ["at","for [^a-z]","tomorrow","next","today","tonight","when","in"]
+        combinedRegexes = "(" + ")|(".join(SubjectRegexes) + ")"
+
         output = " "
         textA = text.split(" ")
         for v,a in enumerate(textA): 
-            if a in SubjectKeywords:    
-                output = output.join(textA[:v])
+            
+            viewString = a + " "
+            if v < len(textA)-1:
+                viewString += textA[v+1]
+            #if the word is in the SubjectKeywords regex looped through the text and get the subject
+            if re.search(combinedRegexes, viewString):
+                output = output.join(textA[:v+1])
                 break
-    
+        #potential filtering in the future 
+        # Subject_stop_words = set(subjectstopwords.getwords())
+        # output = self.filter_words(output, Subject_stop_words)
         return output
     

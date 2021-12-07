@@ -10,3 +10,8 @@ class commandstopwords:
         #words used for filtering the user input
         commandstopword = {'set', 'want', 'please'}
         return commandstopword | stopword
+class subjectstopwords:
+    def getwords():
+        #words used for filtering the user input
+        subjectstopword = {'set', 'want', 'please', "tell", "remind"}
+        return subjectstopword
