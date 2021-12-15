@@ -154,7 +154,9 @@ class LanguageParser:
         #get the date of today 
         today = datetime.date.today()
         outputDate = today
-        textA = text.split(" ")
+        test = ""
+        cleanedText = text.replace("st ", "").replace("nd ", "").replace("rd ", "").replace("th ", "")
+        textA = cleanedText.split(" ")
         for index, t in enumerate(textA):
             if t in keywords and index+1 < len(textA):
                 if textA[index+1] in daysOfTheWeek:
@@ -170,12 +172,15 @@ class LanguageParser:
             elif t == "month":
                 outputDate = datetime.date.today() + datetime.timedelta(days=30)
                 break
-            if t in ["the"] and index+1 < len(textA):
-                if textA[index+1].isdigit():
-                    outputDate = datetime.date(today.year,today.month,int(textA[index+1]))
-            
+            if t in ["the"] or t in months:
+                if index+1 < len(textA):
+                    if textA[index+1].isdigit():
+                        test = "true"
+                        outputDate = datetime.date(today.year,today.month,int(textA[index+1]))
+        
         finaldate = f'{outputDate.month-1}-{outputDate.day}-{outputDate.year}'
         return finaldate
+     
     def nextWeekday(self, date, weekday):
         days_ahead = weekday - date.weekday()
         if days_ahead <= 0: # Target day already happened this week
@@ -219,7 +224,7 @@ class LanguageParser:
             if v < EndIndex:
                 if a.isdigit():
                     EndIndex = v
-                if a in timeKeywords and textA[v+1].isdigit():    
+                if a in timeKeywords:    
                     EndIndex = v
                 if a in dateKeywords:
                     EndIndex = v

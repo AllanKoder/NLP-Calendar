@@ -148,6 +148,14 @@
   font-size: 13px;
   text-indent: 0.5rem;
 }
+.command-result
+{
+  position: absolute;
+  bottom: 40px;
+  width: 38%;
+  font-size: 13px;
+  text-indent: 0.5rem;
+}
 .helpbutton
 {
   position: absolute;

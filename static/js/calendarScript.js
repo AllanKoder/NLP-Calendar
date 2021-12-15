@@ -148,4 +148,3 @@ const refreshPageSaveCookies= () => {
     renderCalendar();
 }
 renderCalendar();
-

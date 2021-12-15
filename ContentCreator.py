@@ -6,7 +6,7 @@ class ContentCreator:
         self.time = "1200"
         self.date = "12-0-0"
     def createPost(self, text):
-        convertedNumberText = lp.wordToNumberSentence(lp.seperateTime(text)).lower().replace("st","").replace("nd","").replace("rd","").replace("th","")
+        convertedNumberText = lp.wordToNumberSentence(lp.seperateTime(text)).lower()
         eventDate = lp.getEventDate(convertedNumberText)
         reminder_duration_class = lp.classify(convertedNumberText)
         eventStartTime = lp.getEventStartTime(convertedNumberText)
