@@ -36,10 +36,11 @@
         </div>
         <div class="grid-item">
             {% for date in dates %}
-                <p>{{ date.title}}</p>
-                <p>{{ date.type}}</p>
-                <p>{{ date.time}}</p> 
-                <p>{{ date.tips}}</p> 
+                <p>subject: {{ date.title }}</p>
+                <p>class: {{ date.type }}</p>
+                <p>time: {{ date.time }}</p> 
+                <p>duration: {{ date.duration }}</p> 
+                <p>date: {{ date.date }}</p> 
             {% endfor %}     
         </div>
     </div>

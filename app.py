@@ -5,6 +5,7 @@ from word2number import w2n
 from datetime import datetime
 #import the objects classes in the project directiory
 from Dictionary import Dictionary
+from ContentCreator import ContentCreator
 from LanguageParser import LanguageParser
 
 app = Flask(__name__)
@@ -25,6 +26,7 @@ class dates (db.Model):
 #create tword2numberhe objects for the classes in the project directory 
 WordDictionary = Dictionary()
 CommandInterpreter = LanguageParser()
+PostCreator = ContentCreator()
 
 
 default = [
@@ -46,9 +48,9 @@ def InputCommand():
         if request.form.get("command"):
             text = request.form['command']
             try:
-                return f"<h1>This is a: {CommandInterpreter.getSubject(text)}</h1>"
+                return render_template("home.html", dates=PostCreator.createPost(text))
             except:
-                return f"<h1>This is a: {CommandInterpreter.getSubject(text)}</h1>"
+                return render_template("home.html", dates=PostCreator.createPost(text))
         if request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate',values=value))
@@ -67,9 +69,9 @@ def viewdate(values):
         if request.form.get("command"):
             text = request.form['command']
             try:
-                return f"<h1>This is a: {CommandInterpreter.getSubject(text)}</h1>"
+                return render_template("home.html", dates=PostCreator.createPost(text))
             except:
-                return f"<h1>This is a: {w2n.word_to_num(text)}</h1>"
+                return render_template("home.html", dates=PostCreator.createPost(text))
         if request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate', values=value))
