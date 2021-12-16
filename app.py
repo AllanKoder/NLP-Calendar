@@ -57,14 +57,6 @@ def InputCommand():
 
 @app.route("/viewdate/<values>", methods=['GET', 'POST'])
 def viewdate(values):
-    dates = [
-    {
-        'title': values,
-        'type': 'reminder',
-        'time': "8:00am",
-        'tips': 'remember to eat'
-    }
-    ]
     if request.method == "POST":
         if request.form.get("command"):
             text = request.form['command']

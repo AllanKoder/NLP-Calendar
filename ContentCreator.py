@@ -23,7 +23,8 @@ class ContentCreator:
                 'type': reminder_duration_class,
                 'time': eventStartTime,
                 'duration': eventDuration,
-                'date': eventDate 
+                'date': eventDate,
+                'message': "Successfully created event" 
             }
         ]
         

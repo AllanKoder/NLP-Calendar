@@ -101,7 +101,7 @@ class LanguageParser:
             v = ind + index
             #if the character is a number, and the next character is not a number, then it is a time, and we want to seperate it
             if cha.isdigit() and v+1 < len(text):
-                if text[v+1].isdigit() == False and text[v+1] != " ":
+                if text[v+1].isdigit() == False and text[v+1] != " " and text[v+1] != ":":
                     text = text[:v+1] + " " + text[v+1:]   
                     index += 1
         return text
@@ -109,24 +109,19 @@ class LanguageParser:
         #if there is the word 'at' inside the text, find the time that accomadates it: 
         textA = text.split(" ")
         time = None
+        hourMinutes = None
         Periodindex = 0
-        keywords = ["at", "after"]
+        keywords = ["at", "after", "before", "on", "from"]
         periodKeywords = ["in", "on"]
         nonPeriodDictionary = {"morning": "900", "afternoon": "1200", "evening": "1800", "night": "2100","midnight": "0000", "noon": "1200", "midday": "1200","breakfast": "900", "lunch": "1200", "dinner": "1800"}
         for v,a in enumerate(textA): 
             #turning time into military clock time 
-            if a in keywords and textA[v+1].isdigit():
+             if a in keywords and textA[v+1].replace(":","").isdigit():
                 hourMinutes = textA[v+1].split(":")
-                
-                hours = hourMinutes[0]
-                minutes = 0
-                if len(hourMinutes) > 1:
-                    minutes = hourMinutes[1]
-                time = int(hours) * 100 + int(minutes)        
                 Periodindex = v+2
                 break
         if time is None:
-            # if no time was found, check to see if there is a period in the text, sucas morning, afternoon, evening, night
+            # if no time was found, check to see if there is a period in the text, such as morning, afternoon, evening, night
             for v,a in enumerate(textA): 
                 if a in periodKeywords:
                     Periodindex = v+1
@@ -135,15 +130,19 @@ class LanguageParser:
                     if x in nonPeriodDictionary:
                         time = nonPeriodDictionary.get(x)
                         break 
-                
         else: 
             if Periodindex < len(textA):
                 if textA[Periodindex].lower() == "pm":
                     time += 1200
             while time > 2400:
                 time -= 2400
-  
-        return time
+        if hourMinutes is not None:
+            try:
+                return int(hourMinutes[0])*100 + int(hourMinutes[1])
+            except:
+                return int(hourMinutes[0])*100
+        else: 
+            return time
     def getEventDate(self, text):
         #find the keyword 'on' and then find the date that accomadates it:
         #get the date of the next day of the week
@@ -226,7 +225,7 @@ class LanguageParser:
                     EndIndex = v
                 if a in timeKeywords:    
                     EndIndex = v
-                if a in dateKeywords:
+                if a in dateKeywords and startIndex > v:
                     EndIndex = v
             if a in startkeywords:
                 if v > startIndex:
@@ -235,4 +234,7 @@ class LanguageParser:
                 if v+1 < len(textA):
                     if textA[v+1] in daysOftheWeek and v < EndIndex:
                         EndIndex = v
-        return " ".join(textA[startIndex:EndIndex])
+            o = " ".join(textA[startIndex:EndIndex])
+            for s in daysOftheWeek:
+                o = o.replace(s, "")
+        return o

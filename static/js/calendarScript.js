@@ -12,15 +12,15 @@ if (indexTab != "") {
 function getCookie(cookiename) {
     let name = cookiename + "=";
     let decodedCookie = decodeURIComponent(document.cookie);
-    let ca = decodedCookie.split(';');
+    let cookie = decodedCookie.split(';');
 
-    for(let i = 0; i < ca.length; i++) {
-      let c = ca[i];
-      while (c.charAt(0) == ' ') {
-        c = c.substring(1);
+    for(let i = 0; i < cookie.length; i++) {
+      let h = cookie[i];
+      while (h.charAt(0) == ' ') {
+        h = h.substring(1);
       }
-      if (c.indexOf(name) == 0) {
-        return c.substring(name.length, c.length);
+      if (h.indexOf(name) == 0) {
+        return h.substring(name.length, h.length);
       }
     }
     return "";
@@ -143,7 +143,7 @@ document.querySelector(".next").addEventListener("click", function(){
 });
 
 const refreshPageSaveCookies= () => {
-    console.log(index);
+    console.log(document.cookie + " " + index);
     document.cookie = `index=${index};`;
     renderCalendar();
 }

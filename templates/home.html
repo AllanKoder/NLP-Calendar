@@ -29,7 +29,11 @@
             </div>
         </div>
         <div class="grid-item">
-            <p class = "command-result">console result : this is going good!</p>
+            {% for date in dates %}
+                <div class="alert alert-success command-result-1" role="alert">
+                    {{ date.message }}
+                </div>
+            {% endfor %}  
             <form method="POST">
                 <input name = "command" class = "input-command"  placeholder="">
             </form>      

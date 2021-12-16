@@ -141,6 +141,7 @@
 /*make a input prompt for the user to enter the command on the date on the right side of the screen*/
 .input-command
 {
+  padding: 0.5rem;
   position: absolute;
   bottom: 10px;
   height: 40px;
@@ -148,10 +149,19 @@
   font-size: 13px;
   text-indent: 0.5rem;
 }
-.command-result
+.command-result-1
 {
+  padding: 0.5rem;
   position: absolute;
   bottom: 40px;
+  width: 38%;
+  font-size: 13px;
+  text-indent: 0.5rem;
+}
+.command-result-2
+{
+  position: absolute;
+  bottom: 55px;
   width: 38%;
   font-size: 13px;
   text-indent: 0.5rem;
