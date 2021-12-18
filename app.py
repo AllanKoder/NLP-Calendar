@@ -1,4 +1,5 @@
 import os
+from re import I
 from flask import Flask, render_template, request, url_for, redirect
 from flask_sqlalchemy import SQLAlchemy
 from word2number import w2n
@@ -7,6 +8,7 @@ from datetime import datetime
 from Dictionary import Dictionary
 from ContentCreator import ContentCreator
 from LanguageParser import LanguageParser
+from DateDataManager import DateDataManager
 
 app = Flask(__name__)
 #location of the database
@@ -27,6 +29,7 @@ class dates (db.Model):
 WordDictionary = Dictionary()
 CommandInterpreter = LanguageParser()
 PostCreator = ContentCreator()
+DataManager = DateDataManager()
 
 
 default = [
@@ -48,9 +51,13 @@ def InputCommand():
         if request.form.get("command"):
             text = request.form['command']
             try:
-                return render_template("home.html", dates=PostCreator.createPost(text))
+                date = PostCreator.createPost(text)
+                DataManager.addData(date)
+                return render_template("home.html", dates=date)
             except:
-                return render_template("home.html", dates=PostCreator.createPost(text))
+                date = PostCreator.createPost(text)
+                DataManager.addData(date)
+                return render_template("home.html", dates=date)
         if request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate',values=value))
@@ -61,15 +68,21 @@ def viewdate(values):
         if request.form.get("command"):
             text = request.form['command']
             try:
-                return render_template("home.html", dates=PostCreator.createPost(text))
+                date = PostCreator.createPost(text)
+                return render_template("home.html", dates=date)
             except:
-                return render_template("home.html", dates=PostCreator.createPost(text))
+                date = PostCreator.createPost(text)
+                DataManager.addData(date)
+                return render_template("home.html", dates=date)
         if request.form.get("date"):
             value = request.form['date']
-            return redirect(url_for('viewdate', values=value))
+            return redirect(url_for('viewdate',values=value))
 
-    return render_template("home.html", dates=dates)
-
+    
+    date = DataManager.getDate(values)
+    if date is None:
+        date = default
+    return render_template("home.html", dates=date)
 
 if __name__ == "__main__":
     app.run(debug=True)

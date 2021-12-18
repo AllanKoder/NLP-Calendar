@@ -108,7 +108,8 @@ class LanguageParser:
     def getEventStartTime(self, text):
         #if there is the word 'at' inside the text, find the time that accomadates it: 
         textA = text.split(" ")
-        time = None
+        time = 0
+        found = False
         hourMinutes = None
         Periodindex = 0
         keywords = ["at", "after", "before", "on", "from"]
@@ -118,9 +119,10 @@ class LanguageParser:
             #turning time into military clock time 
              if a in keywords and textA[v+1].replace(":","").isdigit():
                 hourMinutes = textA[v+1].split(":")
+                found = True
                 Periodindex = v+2
                 break
-        if time is None:
+        if found is False:
             # if no time was found, check to see if there is a period in the text, such as morning, afternoon, evening, night
             for v,a in enumerate(textA): 
                 if a in periodKeywords:
@@ -138,9 +140,9 @@ class LanguageParser:
                 time -= 2400
         if hourMinutes is not None:
             try:
-                return int(hourMinutes[0])*100 + int(hourMinutes[1])
+                return int(hourMinutes[0])*100 + int(hourMinutes[1]) + time
             except:
-                return int(hourMinutes[0])*100
+                return int(hourMinutes[0])*100 + time
         else: 
             return time
     def getEventDate(self, text):
