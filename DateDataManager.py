@@ -3,7 +3,11 @@ class DateDataManager():
         self.data = {}
         pass
     def addData(self, post):
-        self.data[post[0].get("date")] = post
+        keyResult = self.data.get(post.get("date"))
+        if keyResult is not None:
+            keyResult.append(post)
+        else:
+            self.data[post.get("date")] = [post]
     def getDate(self, date):
         return self.data.get(date)
     def getWholeData(self):

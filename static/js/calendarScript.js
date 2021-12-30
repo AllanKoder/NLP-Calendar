@@ -89,7 +89,7 @@ const renderCalendar = () => {
         <div class="date-content">
         <form method="POST">
             <input class = "calendar-button-value" type = "text" name = "date" value = "${cmonth}-${cday}-${cyear}"> 
-            <input class = "prev-date" type = "submit" value ="${cday}" name = "calendarButton-${prevLastDay - i}" class = "date-content">
+            <input class = "prev-date" type = "submit" value ="${cday}" name = "calendarButton-${prevLastDay + 2 - i}" class = "date-content">
         </form>                 
         </div>`;
     }

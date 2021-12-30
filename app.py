@@ -32,14 +32,9 @@ PostCreator = ContentCreator()
 DataManager = DateDataManager()
 
 
-default = [
-    {
-        'title': 'waiting',
-        'type': 'waiting',
-        'time': "waiting",
-        'tips': 'click on a day'
-    }
-]
+default = [{
+        'title': 'Input below or select a date',
+}]
 
 @app.route('/')
 def Home():
@@ -50,14 +45,13 @@ def InputCommand():
     if request.method == "POST":
         if request.form.get("command"):
             text = request.form['command']
-            try:
-                date = PostCreator.createPost(text)
-                DataManager.addData(date)
-                return render_template("home.html", dates=date)
-            except:
-                date = PostCreator.createPost(text)
-                DataManager.addData(date)
-                return render_template("home.html", dates=date)
+            #get the command from the user and add to the database
+            date = PostCreator.createPost(text)
+            dateKey = CommandInterpreter.getEventDate(PostCreator.cleanText(text))
+            DataManager.addData(date)
+            InputtedDate = dateKey.split("-")
+            dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
+            return render_template("home.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
         if request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate',values=value))
@@ -67,22 +61,23 @@ def viewdate(values):
     if request.method == "POST":
         if request.form.get("command"):
             text = request.form['command']
-            try:
-                date = PostCreator.createPost(text)
-                return render_template("home.html", dates=date)
-            except:
-                date = PostCreator.createPost(text)
-                DataManager.addData(date)
-                return render_template("home.html", dates=date)
+            
+            date = PostCreator.createPost(text)
+            dateKey = CommandInterpreter.getEventDate(PostCreator.cleanText(text))
+            DataManager.addData(date)
+            InputtedDate = dateKey.split("-")
+            dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
+            return render_template("home.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
         if request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate',values=value))
-
-    
     date = DataManager.getDate(values)
     if date is None:
         date = default
-    return render_template("home.html", dates=date)
+    InputtedDate = values.split("-")
+    dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
+    
+    return render_template("home.html", dates=date, dateTitle=dateTitle)
 
 if __name__ == "__main__":
     app.run(debug=True)

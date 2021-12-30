@@ -136,11 +136,14 @@ class LanguageParser:
             if Periodindex < len(textA):
                 if textA[Periodindex].lower() == "pm":
                     time += 1200
+                if textA[Periodindex].lower() == "am":
+                    while time >= 1200:
+                        time -= 1200
             while time > 2400:
                 time -= 2400
         if hourMinutes is not None:
             try:
-                return int(hourMinutes[0])*100 + int(hourMinutes[1]) + time
+                return int(hourMinutes[0])*100 + (int(hourMinutes[1])/60)*100 + time
             except:
                 return int(hourMinutes[0])*100 + time
         else: 
@@ -155,7 +158,6 @@ class LanguageParser:
         #get the date of today 
         today = datetime.date.today()
         outputDate = today
-        test = ""
         cleanedText = text.replace("st ", "").replace("nd ", "").replace("rd ", "").replace("th ", "")
         textA = cleanedText.split(" ")
         for index, t in enumerate(textA):
@@ -176,9 +178,11 @@ class LanguageParser:
             if t in ["the"] or t in months:
                 if index+1 < len(textA):
                     if textA[index+1].isdigit():
-                        test = "true"
                         outputDate = datetime.date(today.year,today.month,int(textA[index+1]))
-        
+            if t in months:
+                outputDate = datetime.date(today.year,months.index(t)+1,outputDate.day)
+                if months.index(t)+1 < today.month:
+                        outputDate = datetime.date(today.year+1,months.index(t)+1,outputDate.day)
         finaldate = f'{outputDate.month-1}-{outputDate.day}-{outputDate.year}'
         return finaldate
      
@@ -189,16 +193,34 @@ class LanguageParser:
         return date + datetime.timedelta(days_ahead)
     def getEventDurationTime(self, text):
         #if there is the word 'at' inside the text, find the time that accomadates it: 
-        keywords = ["for", "lasting"]
+        keywords = ["for", "lasting","of"]
         textA = text.split(" ")
-        duration = 90
-        Periodindex = 0
-        for v,a in enumerate(textA): 
+        duration = 60
+        Periodindex = len(textA)+1
+        for v,a in enumerate(textA):    
             #turning time into military clock time 
             if a in keywords and textA[v+1].isdigit():    
                 duration = int(textA[v+1])    
-                Periodindex = v+2 
+                Periodindex = v+2
                 break
+            if a == "from":
+                try:
+                    startTime = textA[v+1].split(":")
+                    endIndex = v+3
+                    if textA[endIndex] == "to":
+                        endIndex += 1
+                    endTime = textA[endIndex].split(":")
+                    startMin = 0
+                    EndMin = 0
+                    if len(endTime) > 1:
+                        EndMin = int(endTime[1])
+                    if len(startTime) > 1:
+                        startMin = int(startTime[1])
+                    totalTime = int(endTime[0])+ (EndMin/60*100) - (int(startTime[0])+(startMin/60*100))
+                    duration = totalTime
+                except Exception as e:
+                    return str(e)
+                    
         if Periodindex <= len(textA):
             if re.search("hour", textA[Periodindex]):
                 duration = (duration) * 60
@@ -211,10 +233,10 @@ class LanguageParser:
 
     def getSubject(self, text):
         #if there is the word in SubjectKeywords is inside the text, then get the subject before or after it: 
-        timeKeywords = ["for", "at", "in", "on", "after", "before"]
+        endKeywords = ["for", "at", "in", "on", "after", "from", "before"]
         dateKeywords = ["tomorrow", "today", "tonight", "when"]
         daysOftheWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-        startkeywords = ["do", "me", "make", "work", "to", "set", "create", "have", "a", "an"]
+        startkeywords = ["do", "me", "make", "work", "set", "create", "have", "a", "an"]
 
         textA = text.split(" ")
         startIndex = 0
@@ -225,7 +247,7 @@ class LanguageParser:
             if v < EndIndex:
                 if a.isdigit():
                     EndIndex = v
-                if a in timeKeywords:    
+                if a in endKeywords:    
                     EndIndex = v
                 if a in dateKeywords and startIndex > v:
                     EndIndex = v

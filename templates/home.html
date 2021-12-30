@@ -29,6 +29,50 @@
             </div>
         </div>
         <div class="grid-item">
+            <div class = "timeline-measurement">
+                <center>
+                <!-- create a line for all times from 1am to 12pm-->
+                <div class = "date-line"><div class ="timeline-text">1am</div></div>
+                <div class = "date-line"><div class ="timeline-text">2am</div></div>
+                <div class = "date-line"><div class ="timeline-text">3am</div></div>                
+                <div class = "date-line"><div class ="timeline-text">4am</div></div>
+                <div class = "date-line"><div class ="timeline-text">5am</div></div>
+                <div class = "date-line"><div class ="timeline-text">6am</div></div>
+                <div class = "date-line"><div class ="timeline-text">7am</div></div>
+                <div class = "date-line"><div class ="timeline-text">8am</div></div>
+                <div class = "date-line"><div class ="timeline-text">9am</div></div>
+                <div class = "date-line"><div class ="timeline-text">10am</div></div>
+                <div class = "date-line"><div class ="timeline-text">11am</div></div>
+                <div class = "date-line"><div class ="timeline-text">12pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">1pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">2pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">3pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">4pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">5pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">6pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">7pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">8pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">9pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">10pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">11pm</div></div>
+                <div class = "date-line"><div class ="timeline-text">12am</div></div>
+                </center>     
+            </div>
+            <center>
+                <div class = "dates">
+                    {% if dateTitle %}       
+                        <h2 class="timeline-title">Events for {{ dateTitle }}</h2>
+                    {% else %}
+                        <h2 class="timeline-title">Timeline</h2>
+                    {% endif %}
+                    {% for date in dates %}
+                    <div class ="timeline {{ date.type }}" style="height:calc({{ date.duration }}vh/18.65); top: calc({{ date.time }}vh/31.23 + 6.7vh);
+                     border-color: {{ date.color }}; color:{{ date.color }}; width: calc(9% + 2% / (500 / {{ date.duration }})); font-size: calc(0.7rem + 0.55rem / (500 / {{ date.duration }}));">
+                        <div class = "timeline-content-text"><span class = "white-highlight">{{ date.title }}</span></div></div>
+                    <br>
+                {% endfor %}    
+                </div>  <!-- end of dates --> 
+            </center>
             {% for date in dates %}
                 <div class="alert alert-success command-result-1" role="alert">
                     {{ date.message }}
@@ -40,13 +84,6 @@
             <button type="button" onclick="informationPrompt()" class = "helpbutton"><strong>&#x24D8;</strong></button>          
         </div>
         <div class="grid-item">
-            {% for date in dates %}
-                <p>subject: {{ date.title }}</p>
-                <p>class: {{ date.type }}</p>
-                <p>time: {{ date.time }}</p> 
-                <p>duration: {{ date.duration }}</p> 
-                <p>date: {{ date.date }}</p> 
-            {% endfor %}     
         </div>
     </div>
 </div>

@@ -4,54 +4,48 @@ class Dictionary:
     #create functions for each command type
     def __init__(self):
         self.dictionary = PyDictionary()
-    def interpret(self, command):
-        if command[0] == 'define':
-            return self.define(command[1])
-        elif command[0] == 'synonym':
-            return self.synonym(command[1])
-        elif command[0] == 'antonym':
-            return self.antonym(command[1])
-        elif command[0] == 'example':
-            return self.example(command[1])
-        elif command[0] == 'translate':
-            return self.translate(command[1])
-        elif command[0] == 'play':
-            return self.play(command[1])
-        elif command[0] == 'help':
-            return self.help()
-        else:
-            return 'Invalid command'
     def define(self, word):
-        definition = self.dictionary.meaning(word)
-        if definition == None:
-            return 'No definition found'
-        else:
-            return definition
+        try: 
+            definition = self.dictionary.meaning(word)
+            if definition == None:
+                return ""
+            else:
+                return definition
+        except:
+            return ""
     def synonym(self, word):
-        synonyms = self.dictionary.synonym(word)
-        if synonyms == None:
-            return 'No synonyms found'
-        else:
-            return synonyms
+        try: 
+            synonyms = self.dictionary.synonym(word)
+            if synonyms == None:
+                return ""
+            else:
+                return synonyms
+        except:
+            return ""
     def antonym(self, word):
-        antonyms = self.dictionary.antonym(word)
-        if antonyms == None:
-            return 'No antonyms found'
-        else:
-            return antonyms
+        try: 
+            antonyms = self.dictionary.antonym(word)
+            if antonyms == None:
+                return ""
+            else:
+                return antonyms
+        except:
+            return ""
     def example(self, word):
-        examples = self.dictionary.example(word)
-        if examples == None:
-            return 'No examples found'
-        else:
-            return examples
+        try: 
+            examples = self.dictionary.example(word)
+            if examples == None:
+                return ""
+            else:
+                return examples
+        except:
+            return ""
     def translate(self, word):
-        translation = self.dictionary.translate(word)
-        if translation == None:
-            return 'No translation found'
-        else:
-            return translation
-    def play(self, word):
-        return 'Playing ' + word
-    def help(self):
-        return 'Available commands: define, synonym, antonym, example, translate, play, help'
+        try:
+            translation = self.dictionary.translate(word)
+            if translation == None:
+                return ""
+            else:
+                return translation
+        except:
+            return ""
