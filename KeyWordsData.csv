@@ -1,23 +1,20 @@
-Reminder,Duration,Seperator,Time 
-Remind,for,to,Tomorrow 
-let,during ,for a,Next Week [Day]
-Alarm,interview,,
-Notification,that,,
-Report,meeting,,
-Announce,conversation,,
-Notice,last,,
-Warn,gathering,,
-inform,event,,
-notify,game,,
-alert,meal,,
-advise,event,,
-tell ,performance,,
-fill,happening,,
-know ,action,,
-update ,perform,,
-Instruction,exercise,,
-call,study,,
-attention,learn,,
-,work,,
-,winner,,
-,opponent ,,
+Reminder,Duration,Exercise,Work,Leisure,Natural
+Remind,work,exercise,assignment,leisure,meal
+let,winner,,work,watch,sleep
+Alarm,interview,catch,occupation,play,nap
+Notification,,throw,contract,playing,
+Report,meeting,teams,job,story,drink
+Announce,conversation,players,task,viewed,food
+Notice,opponent,running,price,view,eat
+Warn,gathering,moving,money,singing,eats
+inform,event,climbing,,pleasant,introspection
+notify,game,movement,,pleasing,contemplation
+alert,meal,,,read,breath
+advise,event,movements,,visiting,
+tell ,performance,compete,,experience,
+fill,happening,contestant,,relax,
+know ,action,biking,,chat,
+update ,perform,ride,,talk,
+Instruction,exercise,sport,,journey,
+call,study,along,,catching,
+attention,learn,,,game,

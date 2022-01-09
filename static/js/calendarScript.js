@@ -41,16 +41,6 @@ const renderCalendar = () => {
         'November',
         'December'
     ];
-    
-    const dayofweek = [
-        'Sunday',
-        'Monday',
-        'Tuesday',
-        'Wednesday',
-        'Thursday',
-        'Friday',
-        'Saturday'
-    ];
 
     date.setMonth(dateToday.getMonth() + index);
     date.setFullYear(dateToday.getFullYear() + Math.floor((dateToday.getMonth() + index) / 12));
@@ -63,8 +53,6 @@ const renderCalendar = () => {
     const nextDays = 7 - lastDayIndex - 1;
     const year = date.getFullYear();
     console.log(year);
-    const month = date.getMonth();
-    const day = date.getDate();     
 
     const monthDays = document.querySelector('.days');
     
@@ -76,7 +64,7 @@ const renderCalendar = () => {
     const maxDays = 37;
 
     for (let i = firstDay; i > 1; i--) {
-        var cday  = prevLastDay - i;
+        var cday  = prevLastDay - i+2;
         var cmonth = date.getMonth() - 1;
         var cyear = date.getFullYear();
         if(cmonth <= -1)
@@ -89,7 +77,7 @@ const renderCalendar = () => {
         <div class="date-content">
         <form method="POST">
             <input class = "calendar-button-value" type = "text" name = "date" value = "${cmonth}-${cday}-${cyear}"> 
-            <input class = "prev-date" type = "submit" value ="${cday}" name = "calendarButton-${prevLastDay + 2 - i}" class = "date-content">
+            <input class = "prev-date" type = "submit" value ="${cday}" name = "calendarButton-${prevLastDay - i}" class = "date-content">
         </form>                 
         </div>`;
     }

@@ -1,0 +1,16 @@
+{% extends "home.html" %}
+{% block sideContent %}
+<center>
+    <div class = "title-font content-margin">Work-Life Balance Per Day</div>
+        <div class = "bar-graph content-margin">
+            <div class = "graph" style="background-color:rgb(30, 255, 0); width: calc(100% * calc({{ l }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ l }}h</p></div>
+            <div class = "graph" style="background-color:rgb(0, 208, 255); width: calc(100% * calc({{ w }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ w }}h</p></div>
+            <div class = "graph" style="background-color:rgb(238, 255, 0); width: calc(100% * calc({{ e }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ e }}h</p></div>
+            <div class = "graph" style="background-color:rgb(255, 94, 0); width: calc(100% * calc({{ n }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ n }}h</p></div>
+        </div>
+    <div class = "title-font content-margin">Busiest Time of Day</div>
+
+</center>
+
+{% endblock sideContent %}
+

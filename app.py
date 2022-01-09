@@ -38,7 +38,7 @@ default = [{
 
 @app.route('/')
 def Home():
-    return render_template("home.html", dates=default)
+    return render_template("timeline.html", dates=default)
 
 @app.route('/',methods=['POST', 'GET'])
 def InputCommand():
@@ -49,13 +49,15 @@ def InputCommand():
             date = PostCreator.createPost(text)
             dateKey = CommandInterpreter.getEventDate(PostCreator.cleanText(text))
             DataManager.addData(date)
-            InputtedDate = dateKey.split("-")
-            dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
-            return render_template("home.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
+            #get the date from the user and add to the database
+            #return str(DataManager.getWholeData())
+            return redirect(url_for('viewdate',values=dateKey))
         if request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate',values=value))
-
+        if request.form.get("statistics"):
+            return redirect(url_for('statistics'))
+        
 @app.route("/viewdate/<values>", methods=['GET', 'POST'])
 def viewdate(values):
     if request.method == "POST":
@@ -67,18 +69,38 @@ def viewdate(values):
             DataManager.addData(date)
             InputtedDate = dateKey.split("-")
             dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
-            return render_template("home.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
+            return render_template("timeline.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
         if request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate',values=value))
+        if request.form.get("delete"):
+            IDvalue = request.form['delete']
+            DataManager.deleteData(values, IDvalue)
+            #return str(DataManager.getWholeData())
+            return redirect(url_for('viewdate',values=values))
+
     date = DataManager.getDate(values)
     if date is None:
         date = default
     InputtedDate = values.split("-")
     dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
     
-    return render_template("home.html", dates=date, dateTitle=dateTitle)
-
+    return render_template("timeline.html", dates=date, dateTitle=dateTitle)
+@app.route("/stats", methods=['GET', 'POST'])
+def statistics():
+    if request.method == "POST":
+        if request.form.get("command"):
+            text = request.form['command']
+            
+            date = PostCreator.createPost(text)
+            dateKey = CommandInterpreter.getEventDate(PostCreator.cleanText(text))
+            DataManager.addData(date)
+            InputtedDate = dateKey.split("-")
+            dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
+            return render_template("timeline.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
+        if request.form.get("date"):
+            value = request.form['date']
+            return redirect(url_for('viewdate',values=value))
+    return render_template("stats.html", l=10,w=12,e=12,n=1)
 if __name__ == "__main__":
     app.run(debug=True)
-

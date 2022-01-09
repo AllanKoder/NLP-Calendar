@@ -10,39 +10,54 @@ WordDictionary = Dictionary()
 
 class LanguageParser:
     #algorithm order: remove all the weird punctuation, filter the numbers, time, classify the command, filter the stopwords, filter the words, filter the words in the dictionary
-    def classify(self, text):
-        data = pd.read_csv("KeyWordsData.csv")
-        data = data[data[['Duration','Reminder']].notna()]
-        data[['Duration','Reminder']]=data[['Duration','Reminder']].astype(str)
+    def __init__(self) -> None:
+        self.data = pd.read_csv("KeyWordsData.csv")
+    def classifyActivity(self, text, catagories):
+        classData = self.data[self.data[catagories].notna()]
+        classData[catagories]=classData[catagories].astype(str)
 
-        ReminderKeyWords = [x.lower().replace(" ", "") for x in data['Reminder'].tolist()]
-        DurationKeyWords = [x.lower().replace(" ", "") for x in data['Duration'].tolist()]
+        classKeywords = [""]*len(catagories)
+        for index, classTitle in enumerate(catagories):
+            classKeywords[index] = [x.lower().replace(" ", "") for x in classData[classTitle].tolist() if x.lower() != "nan"]
 
+        classScores = [0]*len(catagories)
+
+        ClassWordMap = [dict() for i in range(len(catagories))]
+        
+        test = " "
+        for i in range(len(classKeywords)):
+            for w in classKeywords[i]:
+                test += w + " " 
+                ClassWordMap[i][w] = True
+            
+
+
+        BagOfWordsInput = self.bagOfWords(text)
+
+        for b in BagOfWordsInput:
+            for i in range(len(ClassWordMap)):
+                if ClassWordMap[i].get(b):
+                    classScores[i] += 1
+        output = str(catagories[classScores.index(max(classScores))]).lower()
+        return output
+
+    def CapitalizeTitle(self, text):
+        textArray = text.split(" ")
+        textArray[0] = textArray[0].capitalize()
+        uncaptilizedWords = {"a":True,"an":True,"for":True,"of":True,"and":True,"on":True,"in":True,"at":True,"with":True,"the":True}
+        for index, word in enumerate(textArray[1::]):
+            if not uncaptilizedWords.get(word.lower()):
+                textArray[index+1] = word.capitalize()        
+        return (" ".join(textArray))
+    def bagOfWords(self, text):
+        filtered_sentence = []
+        BagOfWordsInput = []
+        definitions = []
         command_stop_words = set(commandstopwords.getwords())
         stop_words = set(stopwords.getwords())
-
-        ReminderScore = 0
-        DurationScore = 0
-
-        filtered_sentence = []
-        definitions = []
-        BagOfWordsInput = []
-
-        ReminderWordMap = {}
-        DurationWordMap = {}
-
-
         for w in text.split(" "):
             if w.lower() not in command_stop_words:
                 filtered_sentence.append(w)
-
-        #use the dynamic bag of words to find the keywords
-        for w in ReminderKeyWords:
-            ReminderWordMap[w] = 1
-        for w in DurationKeyWords:
-            DurationWordMap[w] = 1
-
-
         for w in filtered_sentence:
             WordDefinition = WordDictionary.define(w)
             for key in WordDefinition:
@@ -57,15 +72,7 @@ class LanguageParser:
         for w in totalwords.split(" "):
             if w.lower() not in stop_words:
                 BagOfWordsInput.append(re.sub('[^a-zA-Z]+', '', w.lower()))
-
-        for b in BagOfWordsInput:
-            if ReminderWordMap.get(b):
-                ReminderScore += 1
-        for b in BagOfWordsInput:
-            if DurationWordMap.get(b):
-                DurationScore += 1
-        returnoutput = "reminder" if ReminderScore >= DurationScore else "duration"
-        return returnoutput
+        return BagOfWordsInput
     def wordToNumber(self, text):
         try:
             return str(w2n.word_to_num(text))
@@ -114,13 +121,15 @@ class LanguageParser:
         Periodindex = 0
         keywords = ["at", "after", "before", "on", "from"]
         periodKeywords = ["in", "on"]
-        nonPeriodDictionary = {"morning": "900", "afternoon": "1200", "evening": "1800", "night": "2100","midnight": "0000", "noon": "1200", "midday": "1200","breakfast": "900", "lunch": "1200", "dinner": "1800"}
+        nonPeriodDictionary = {"morning": "900", "afternoon": "1200", "evening": "1800", "night": "2100","midnight": "0000", "noon": "1200", "midday": "1200","breakfast": "900", "lunch": "1200", "dinner": "1800",  "tonight": "1800"}
         for v,a in enumerate(textA): 
             #turning time into military clock time 
              if a in keywords and textA[v+1].replace(":","").isdigit():
                 hourMinutes = textA[v+1].split(":")
                 found = True
                 Periodindex = v+2
+                if hourMinutes[0] == "12":
+                    Periodindex = 0
                 break
         if found is False:
             # if no time was found, check to see if there is a period in the text, such as morning, afternoon, evening, night
@@ -136,7 +145,7 @@ class LanguageParser:
             if Periodindex < len(textA):
                 if textA[Periodindex].lower() == "pm":
                     time += 1200
-                if textA[Periodindex].lower() == "am":
+                elif textA[Periodindex].lower() == "am":
                     while time >= 1200:
                         time -= 1200
             while time > 2400:
@@ -195,7 +204,7 @@ class LanguageParser:
         #if there is the word 'at' inside the text, find the time that accomadates it: 
         keywords = ["for", "lasting","of"]
         textA = text.split(" ")
-        duration = 60
+        duration = None
         Periodindex = len(textA)+1
         for v,a in enumerate(textA):    
             #turning time into military clock time 
@@ -205,19 +214,32 @@ class LanguageParser:
                 break
             if a == "from":
                 try:
-                    startTime = textA[v+1].split(":")
-                    endIndex = v+3
-                    if textA[endIndex] == "to":
-                        endIndex += 1
-                    endTime = textA[endIndex].split(":")
+                    #get find the integers b
                     startMin = 0
                     EndMin = 0
+                    startMidday = "pm"
+                    endMidday = "pm"
+                    startTime = textA[v+1].split(":")
+                    startHours = int(startTime[0])
+                    if startTime[0] == "12":
+                        startHours = 0
+                    endIndex = v+3
+                    if textA[endIndex] == "to":
+                        endIndex += 1        
+                    if textA[endIndex] in ["pm", "am"]:
+                        endMidday = textA[endIndex]
+                    if textA[v+1] in ["pm", "am"]:
+                        startMidday = textA[v+1]    
+                      
+                    endTime = textA[endIndex].split(":")
+                      
                     if len(endTime) > 1:
                         EndMin = int(endTime[1])
                     if len(startTime) > 1:
                         startMin = int(startTime[1])
-                    totalTime = int(endTime[0])+ (EndMin/60*100) - (int(startTime[0])+(startMin/60*100))
-                    duration = totalTime
+                   
+
+                    duration = self.getDurationfromTime((startHours*60+startMin), startMidday, int(endTime[0])*60 + (EndMin), endMidday)
                 except Exception as e:
                     return str(e)
                     
@@ -230,15 +252,28 @@ class LanguageParser:
                 duration = int(duration) / 60
         
         return duration
-
+    def getDurationfromTime(self, startTime, startMidday, endTime, endMidday):
+        #starttime is in minutes time and combined miltary time. 
+        totalTime = 0
+        if startMidday == endMidday:
+            if startTime > endTime:
+                startMidday = "am"
+            else:
+                totalTime = endTime - startTime
+        if startMidday == "pm" and endMidday == "am":
+            totalTime += abs(600 - endTime) + startTime
+        elif startMidday == "am" and endMidday == "pm":
+            totalTime += abs(600 - startTime) + endTime
+        return abs(totalTime)
+    
     def getSubject(self, text):
         #if there is the word in SubjectKeywords is inside the text, then get the subject before or after it: 
-        endKeywords = ["for", "at", "in", "on", "after", "from", "before"]
-        dateKeywords = ["tomorrow", "today", "tonight", "when"]
+        timeEndKeywords = ["for", "at", "in", "on", "after", "from", "before"]
+        dateKeywords = ["tomorrow", "today", "tonight", "week", "month"]
         daysOftheWeek = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]
-        startkeywords = ["do", "me", "make", "work", "set", "create", "have", "a", "an"]
+        startkeywords = ["do", "me", "make", "work", "set", "have", "a", "an"]
 
-        textA = text.split(" ")
+        textA = text.lower().split(" ")
         startIndex = 0
         EndIndex = len(textA)
         
@@ -247,16 +282,17 @@ class LanguageParser:
             if v < EndIndex:
                 if a.isdigit():
                     EndIndex = v
-                if a in endKeywords:    
-                    EndIndex = v
-                if a in dateKeywords and startIndex > v:
+                if a in timeEndKeywords:
+                    if textA[v+1].isdigit() or ":" in textA[v+1]:    
+                        EndIndex = v
+                if a in dateKeywords and v > startIndex:
                     EndIndex = v
             if a in startkeywords:
                 if v > startIndex:
                     startIndex = v                
             if a.lower() == "on":
                 if v+1 < len(textA):
-                    if textA[v+1] in daysOftheWeek and v < EndIndex:
+                    if textA[v+1] in daysOftheWeek and v > EndIndex:
                         EndIndex = v
             o = " ".join(textA[startIndex:EndIndex])
             for s in daysOftheWeek:
