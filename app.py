@@ -1,9 +1,4 @@
-import os
-from re import I
 from flask import Flask, render_template, request, url_for, redirect
-from flask_sqlalchemy import SQLAlchemy
-from word2number import w2n
-from datetime import datetime
 #import the objects classes in the project directiory
 from Dictionary import Dictionary
 from ContentCreator import ContentCreator
@@ -11,19 +6,6 @@ from LanguageParser import LanguageParser
 from DateDataManager import DateDataManager
 
 app = Flask(__name__)
-#location of the database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dateEvents.db'
-#intialize the database
-db = SQLAlchemy(app)
-
-#create the database 
-class dates (db.Model):
-    id = db.Column(db.Integer, primary_key=True);
-    name = db.Column(db.String(20), nullable=False);
-    date_created = db.Column(db.DateTime, default=datetime.utcnow);
-    #create a function to return a string when we add something to the database
-    def __represnt__(self):
-        return '<Name: %r>' % self.id
 
 #create tword2numberhe objects for the classes in the project directory 
 WordDictionary = Dictionary()
@@ -52,10 +34,10 @@ def InputCommand():
             #get the date from the user and add to the database
             #return str(DataManager.getWholeData())
             return redirect(url_for('viewdate',values=dateKey))
-        if request.form.get("date"):
+        elif request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate',values=value))
-        if request.form.get("statistics"):
+        elif request.form.get("statistics"):
             return redirect(url_for('statistics'))
         
 @app.route("/viewdate/<values>", methods=['GET', 'POST'])
@@ -70,15 +52,17 @@ def viewdate(values):
             InputtedDate = dateKey.split("-")
             dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
             return render_template("timeline.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
-        if request.form.get("date"):
+        elif request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate',values=value))
-        if request.form.get("delete"):
+        elif request.form.get("delete"):
             IDvalue = request.form['delete']
             DataManager.deleteData(values, IDvalue)
             #return str(DataManager.getWholeData())
             return redirect(url_for('viewdate',values=values))
-
+        elif request.form.get("statistics"):
+            return redirect(url_for('statistics'))
+        
     date = DataManager.getDate(values)
     if date is None:
         date = default
@@ -98,9 +82,46 @@ def statistics():
             InputtedDate = dateKey.split("-")
             dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
             return render_template("timeline.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
-        if request.form.get("date"):
+        elif request.form.get("date"):
             value = request.form['date']
             return redirect(url_for('viewdate',values=value))
-    return render_template("stats.html", l=10,w=12,e=12,n=1)
+    
+    #get the hours from each activity using the data class
+    ActivityMap = DataManager.findAmountOfEachActivityPerDay()
+    l = round(ActivityMap.get("leisure"),3)
+    w = round(ActivityMap.get("work"),3)
+    e = round(ActivityMap.get("exercise"),3)
+    n = round(ActivityMap.get("natural"),3)
+
+    #get the total amount of events per day
+    Events = DataManager.findTotalEvents()
+    TotalDays = DataManager.findTotalDays()
+    if TotalDays == 0:
+        TotalDays = 1
+    EventsPerDay = round(Events / TotalDays)
+    
+    maxEvents = 0
+    TimeMaxOverlap = "None"
+    if DataManager.findTotalDays() != 0:
+        try:
+            #find the busiest time of the day 
+            maxEvents, maxEventTime = DataManager.findBusiestTimeOfDay()  
+            
+            #convert the military time to standard time
+            midday = "a.m."
+            if maxEventTime > 1200:
+                maxEventTime = maxEventTime - 1200
+                midday = "p.m."
+            #in the rare case that maxtme has a decimal place, we ignore it
+            l = len(str(maxEventTime).split(".")[0])
+            minutes = str(round(int(str(maxEventTime)[l-2:l])/100*60))
+            if len(minutes) == 1:
+                minutes = "0" + minutes
+            hours = int(str(maxEventTime)[:l-2])
+            TimeMaxOverlap = str(hours) + ":" + str(minutes) + " " + midday
+        except:
+            TimeMaxOverlap = "All events have been deleted"
+    #return all the data to the html page
+    return render_template("stats.html", l=l,w=w,e=e,n=n,Events=Events,EventsPerDay=EventsPerDay,maxEventTime=TimeMaxOverlap,maxEvents=maxEvents)
 if __name__ == "__main__":
     app.run(debug=True)

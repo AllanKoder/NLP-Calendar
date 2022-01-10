@@ -103,3 +103,26 @@
        <!-- end of dates --> 
     </center>
 {% endblock sideContent %}
+{% block rightSideContent%}
+
+<div class="grid-item">
+   <div class = "todo-container">
+      <h2 class = "title-font">To Do List:</h2>
+      <ul>
+         {% for date in dates %}
+          {% if not date.time %}
+              <li class = "todo-text">
+                  {{ date.title }}
+                  {% if date.color %}
+                      <form method="POST">
+                          <input class = "calendar-button-value" name = "delete" value = "{{ date.color }}">
+                          <input type = "submit" value ="&#215;" class = "timeline-delete-todo">
+                      </form>
+                  {% endif %}
+              </li>
+          {% endif %}
+         {% endfor %}
+      </ul>
+   </div>
+</div>
+{% endblock rightSideContent%}

@@ -5,6 +5,7 @@ lp = LanguageParser()
 dm = DateDataManager()
 class ContentCreator:
     def __init__(self):
+        #create the objects for the classes in the project directory
         self.cleanedText = ""
         self.eventDate = ""
         self.reminderDurationClass = ""
@@ -26,7 +27,7 @@ class ContentCreator:
         eventDuration = lp.getEventDurationTime(self.cleanedText)
 
         self.activityClass =  lp.classifyActivity(uncaptilizedSubject, ["Leisure", "Work", "Exercise", "Natural"])
-        
+
         self.eventDuration = 0     
         if self.reminderDurationClass == "duration" or eventDuration != None:
             self.reminderDurationClass = "duration"
@@ -34,12 +35,16 @@ class ContentCreator:
             if self.eventDuration == None:
                 self.eventDuration = 60
         
+        #get the correct date for the post
         splitDate = self.eventDate.split("-")
         dateInput = self.createDate(int(splitDate[0]), splitDate[1], splitDate[2])
+        
+        #create a color for the post that is random and not used before
         randomColor = self.createColor()
         while dm.colorUsed(dateInput,randomColor):
             randomColor = self.createColor()
         
+        #Create the HTML for the post
         output = {
                 'title': self.subject,
                 'type': self.reminderDurationClass,

@@ -1,14 +1,38 @@
 {% extends "home.html" %}
 {% block sideContent %}
 <center>
-    <div class = "title-font content-margin">Work-Life Balance Per Day</div>
+    <div class = "title-font content-margin">Work-Life Balance Average Per Day</div>
         <div class = "bar-graph content-margin">
-            <div class = "graph" style="background-color:rgb(30, 255, 0); width: calc(100% * calc({{ l }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ l }}h</p></div>
-            <div class = "graph" style="background-color:rgb(0, 208, 255); width: calc(100% * calc({{ w }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ w }}h</p></div>
-            <div class = "graph" style="background-color:rgb(238, 255, 0); width: calc(100% * calc({{ e }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ e }}h</p></div>
-            <div class = "graph" style="background-color:rgb(255, 94, 0); width: calc(100% * calc({{ n }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ n }}h</p></div>
+            <!--- create a bar for each day and set the width to the percentage of the total activites summed-->
+            {% if l > 0.1 %}
+            <div class = "graph" style="background-color:rgb(30, 255, 0); width: calc(100% * calc({{ l }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ l }}h</p><div class = "title">Lesiure</div></div>
+            {% endif %}
+            {% if w > 0.1 %}
+            <div class = "graph" style="background-color:rgb(0, 208, 255); width: calc(100% * calc({{ w }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ w }}h</p><div class = "title">Work</div></div>
+            {% endif %}
+            {% if e > 0.1 %}
+            <div class = "graph" style="background-color:rgb(238, 255, 0); width: calc(100% * calc({{ e }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ e }}h</p><div class = "title">Exercise</div></div>
+            {% endif %}
+            {% if n > 0.1 %}
+            <div class = "graph" style="background-color:rgb(255, 94, 0); width: calc(100% * calc({{ n }} / ({{ l }} + {{ w }} + {{ e }} + {{ n }})))"><p>{{ n }}h</p><div class = "title">Natural</div></div>
+            {% endif %}
+            <!-- only create a graph if the width is high enough -->
         </div>
-    <div class = "title-font content-margin">Busiest Time of Day</div>
+        <div class = "content-margin">
+            <!-- only create a graph if the width is high enough -->
+            <p class = "description-text"><strong>Leisure:</strong> Activities for fun and rest such as vacations and hobbies </p>
+            <p class = "description-text"><strong>Work:</strong> Activities that include assignments, school and occupations</p>
+            <p class = "description-text"><strong>Exercise:</strong> Fitness and health, doing exerting activities </p>
+            <p class = "description-text"><strong>Natural:</strong> Taking care of one's body, eating, sleeping and meditation</p>
+        </div>
+        <div class = "title-font content-margin">Events Statistics</div>
+        <br>
+        <p class = "fancy-stat"><strong>Average Events Per Day:</strong> {{ EventsPerDay }} </p>
+        <p class = "fancy-stat"><strong>Total Events:</strong> {{ Events }} </p>
+        <div class = "title-font content-margin">Busiest Time of Day</div>
+        <br>
+        <p class = "fancy-stat"><strong>Busiest Time:</strong> {{ maxEventTime }} </p>
+        <p class = "fancy-stat"><strong>Events Overlapping at that Time:</strong> {{ maxEvents }} </p>
 
 </center>
 

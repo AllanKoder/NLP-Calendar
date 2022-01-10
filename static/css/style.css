@@ -322,8 +322,40 @@
 .graph
 {
   border-style: solid;
-  border-width: 2px;
+  border-width: 5px;
   border-color: rgb(255, 255, 255);
+  transition: 0.2s;
+}
+.graph:hover 
+{
+  border-style: solid;
+  border-width: 0px;
+  border-color: rgb(255, 255, 255);
+}
+.description-text
+{
+  font-size: calc(0.1rem + 0.8vw);
+  text-indent: 1.5rem;
+  text-align: left;
+}
+.fancy-stat
+{
+  font-size: 1.0rem;
+  font-weight: bold;
+  text-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
+  transition: 0.3s;
+}
+.fancy-stat:hover
+{
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+.title
+{
+  margin-top: 4vh;
+  letter-spacing: 0.1rem;
+  font-weight: 700;
+  color:black;
 }
 .bar-graph {
   width: 80%;
@@ -332,8 +364,8 @@
   vertical-align: middle;
   display: flex;
   justify-content: space-between;
-  color: rgb(37, 37, 37);
-  font-size: 1.3rem;
+  color: rgb(0, 0, 0);
+  font-size: 1.1rem;
 }
 .bar-graph p {
   position: relative;
@@ -343,9 +375,5 @@
 
 .content-margin
 {
-  margin-top: 5vh;
-}
-.content-margin-large
-{
-  margin-top: 15vh;
+  margin-top: calc(1vw + 2vh);
 }

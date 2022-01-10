@@ -4,6 +4,7 @@ class Dictionary:
     #create functions for each command type
     def __init__(self):
         self.dictionary = PyDictionary()
+    #define each word, if there is no word, return ""
     def define(self, word):
         try: 
             definition = self.dictionary.meaning(word)

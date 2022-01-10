@@ -13,57 +13,64 @@ class LanguageParser:
     def __init__(self) -> None:
         self.data = pd.read_csv("KeyWordsData.csv")
     def classifyActivity(self, text, catagories):
+        #get the text in the csv file
         classData = self.data[self.data[catagories].notna()]
         classData[catagories]=classData[catagories].astype(str)
 
         classKeywords = [""]*len(catagories)
         for index, classTitle in enumerate(catagories):
             classKeywords[index] = [x.lower().replace(" ", "") for x in classData[classTitle].tolist() if x.lower() != "nan"]
-
+        #create a data structure to manage the points for each catagory
         classScores = [0]*len(catagories)
-
+        #create a map for the catagories
         ClassWordMap = [dict() for i in range(len(catagories))]
         
-        test = " "
         for i in range(len(classKeywords)):
             for w in classKeywords[i]:
-                test += w + " " 
                 ClassWordMap[i][w] = True
-            
 
-
+        #filter the words
         BagOfWordsInput = self.bagOfWords(text)
 
+        #iterate through the text and check if the word is in the map
         for b in BagOfWordsInput:
             for i in range(len(ClassWordMap)):
                 if ClassWordMap[i].get(b):
                     classScores[i] += 1
+        #output the catagory with the highest score
         output = str(catagories[classScores.index(max(classScores))]).lower()
         return output
 
     def CapitalizeTitle(self, text):
+        #split the text into words
         textArray = text.split(" ")
         textArray[0] = textArray[0].capitalize()
         uncaptilizedWords = {"a":True,"an":True,"for":True,"of":True,"and":True,"on":True,"in":True,"at":True,"with":True,"the":True}
+        #if the word is uncaptilized, then capitalize it
+        #but if the word is in the uncaptilized list, then don't capitalize it
         for index, word in enumerate(textArray[1::]):
             if not uncaptilizedWords.get(word.lower()):
                 textArray[index+1] = word.capitalize()        
         return (" ".join(textArray))
     def bagOfWords(self, text):
+        #remove all the weird punctuation
         filtered_sentence = []
         BagOfWordsInput = []
         definitions = []
         command_stop_words = set(commandstopwords.getwords())
         stop_words = set(stopwords.getwords())
+        #makes sures all the filter words are removed
         for w in text.split(" "):
             if w.lower() not in command_stop_words:
                 filtered_sentence.append(w)
+        #define all the words so there is more content
         for w in filtered_sentence:
             WordDefinition = WordDictionary.define(w)
             for key in WordDefinition:
                 if isinstance(WordDefinition, dict):
                     for d in WordDefinition[key]:
                         definitions.append(d)
+        #add all the words to the bag of words, such as definitions, filtered words and numbers
         totalwords = ""
         for s in definitions:
             totalwords += s + " "
@@ -74,17 +81,20 @@ class LanguageParser:
                 BagOfWordsInput.append(re.sub('[^a-zA-Z]+', '', w.lower()))
         return BagOfWordsInput
     def wordToNumber(self, text):
+        #convert the word to a number
         try:
             return str(w2n.word_to_num(text))
         except:
             return None
     def wordToNumberSentence(self, text):
+        
         textArray = text.split(" ")
         index = 0
         output = " "
         #get all the words that are numbers and convert it to a number in digit form
         while (index < len(textArray)):
             if self.wordToNumber(textArray[index]):
+                # if the word is translatable to a number, then we want to replace it with the number
                 additionalString = textArray[index] + " " 
                 for j in range(index+1, len(textArray)):
                     if (self.wordToNumber(textArray[j])):
