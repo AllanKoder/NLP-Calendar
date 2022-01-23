@@ -4,14 +4,14 @@ import numpy as np
 import datetime
 from word2number import w2n
 import re
-from stopwords import commandstopwords, stopwords, subjectstopwords
-from Dictionary import Dictionary
+from calendarweb.stopwords import commandstopwords, stopwords, subjectstopwords
+from calendarweb.Dictionary import Dictionary
 WordDictionary = Dictionary()
 
 class LanguageParser:
     #algorithm order: remove all the weird punctuation, filter the numbers, time, classify the command, filter the stopwords, filter the words, filter the words in the dictionary
     def __init__(self) -> None:
-        self.data = pd.read_csv("KeyWordsData.csv")
+        self.data = pd.read_csv("calendarweb\KeyWordsData.csv")
     def classifyActivity(self, text, catagories):
         #get the text in the csv file
         classData = self.data[self.data[catagories].notna()]
@@ -30,7 +30,7 @@ class LanguageParser:
                 ClassWordMap[i][w] = True
 
         #filter the words
-        BagOfWordsInput = self.bagOfWords(text)
+        BagOfWordsInput = self.depthBagOfWords(text,1)
 
         #iterate through the text and check if the word is in the map
         for b in BagOfWordsInput:
@@ -52,6 +52,11 @@ class LanguageParser:
             if not uncaptilizedWords.get(word.lower()):
                 textArray[index+1] = word.capitalize()        
         return (" ".join(textArray))
+    def depthBagOfWords(self, text, depth):
+        if depth == 0:
+            return text
+        else:
+            return self.depthBagOfWords(" ".join(self.bagOfWords(text)), depth-1)
     def bagOfWords(self, text):
         #remove all the weird punctuation
         filtered_sentence = []
@@ -98,6 +103,7 @@ class LanguageParser:
                 additionalString = textArray[index] + " " 
                 for j in range(index+1, len(textArray)):
                     if (self.wordToNumber(textArray[j])):
+                        #if the word is still translatable to a number, then we want to add it to the number
                         additionalString += textArray[j] + " "
                         index+=1
                     else:
@@ -149,9 +155,11 @@ class LanguageParser:
                     break
                 for x in textA[Periodindex:len(textA)]:
                     if x in nonPeriodDictionary:
+                        #for all the words that can still be converted in a row, add them to the time. Such as (alarm for thirty five minutes)
                         time = nonPeriodDictionary.get(x)
                         break 
         else: 
+            #use the index to find the pm and am, and add the time according to military time
             if Periodindex < len(textA):
                 if textA[Periodindex].lower() == "pm":
                     time += 1200
@@ -161,6 +169,8 @@ class LanguageParser:
             while time > 2400:
                 time -= 2400
         if hourMinutes is not None:
+            #attempt to use the hour and minutes to find the time
+            #if there is an error with minutes, then only return hours
             try:
                 return int(hourMinutes[0])*100 + (int(hourMinutes[1])/60)*100 + time
             except:
@@ -182,10 +192,11 @@ class LanguageParser:
         for index, t in enumerate(textA):
             if t in keywords and index+1 < len(textA):
                 if textA[index+1] in daysOfTheWeek:
+                    #use the day of the week to find the date
                     outputDate = self.nextWeekday(today, daysOfTheWeek.get(textA[index+1]))
                     break
-                
-            elif t == "tomorrow":
+            #if the word is a amount of time, add the according time to the date
+            if t == "tomorrow":
                 outputDate = datetime.date.today() + datetime.timedelta(days=1)
                 break
             elif t == "week":
@@ -195,10 +206,12 @@ class LanguageParser:
                 outputDate = datetime.date.today() + datetime.timedelta(days=30)
                 break
             if t in ["the"] or t in months:
+                #if the word is a date, such as (on the) 27th, then we want to use the date
                 if index+1 < len(textA):
                     if textA[index+1].isdigit():
                         outputDate = datetime.date(today.year,today.month,int(textA[index+1]))
             if t in months:
+                #if it is a month, then find the date of the month
                 outputDate = datetime.date(today.year,months.index(t)+1,outputDate.day)
                 if months.index(t)+1 < today.month:
                         outputDate = datetime.date(today.year+1,months.index(t)+1,outputDate.day)
@@ -206,6 +219,7 @@ class LanguageParser:
         return finaldate
      
     def nextWeekday(self, date, weekday):
+        #find how many days until the next weekday and if the next weekday is not in the future, make it the next week
         days_ahead = weekday - date.weekday()
         if days_ahead <= 0: # Target day already happened this week
             days_ahead += 7
@@ -231,9 +245,12 @@ class LanguageParser:
                     endMidday = "pm"
                     startTime = textA[v+1].split(":")
                     startHours = int(startTime[0])
+                    #if the start time is in the afternoon, then set the startMidday to pm
                     if startTime[0] == "12":
                         startHours = 0
+                    #this is the predicted endindex, however with formatting, we have to find the correct time 
                     endIndex = v+3
+                    
                     if textA[endIndex] == "to":
                         endIndex += 1        
                     if textA[endIndex] in ["pm", "am"]:
@@ -243,17 +260,19 @@ class LanguageParser:
                       
                     endTime = textA[endIndex].split(":")
                       
+                    #if the len is 2, then it includes minutes 
                     if len(endTime) > 1:
                         EndMin = int(endTime[1])
                     if len(startTime) > 1:
                         startMin = int(startTime[1])
                    
-
+                    #return the time in military time
                     duration = self.getDurationfromTime((startHours*60+startMin), startMidday, int(endTime[0])*60 + (EndMin), endMidday)
                 except Exception as e:
                     return str(e)
                     
         if Periodindex <= len(textA):
+            #multiply the time by the unit, such as hours, minutes and seconds, and return the time so it is in minutes 
             if re.search("hour", textA[Periodindex]):
                 duration = (duration) * 60
             elif re.search("minute", textA[Periodindex]):
@@ -270,6 +289,7 @@ class LanguageParser:
                 startMidday = "am"
             else:
                 totalTime = endTime - startTime
+        #If there is a difference in midday, then we add the difference from 12pm and add the other time 
         if startMidday == "pm" and endMidday == "am":
             totalTime += abs(600 - endTime) + startTime
         elif startMidday == "am" and endMidday == "pm":
@@ -288,7 +308,10 @@ class LanguageParser:
         EndIndex = len(textA)
         
         for v,a in enumerate(textA): 
-            #turning time into military clock time 
+            #if the sentence starts with a keyword, then we want to start at the next word
+            #if the word is a time, then we want to end at the time
+            #whenever there is a keyword with a proceeding number or time, we want to end at the keyword
+            #if there is a word in a array, we want to set the end or start index depending on the word
             if v < EndIndex:
                 if a.isdigit():
                     EndIndex = v

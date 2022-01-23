@@ -1,13 +1,19 @@
-from flask import Flask, render_template, request, url_for, redirect
+from flask import render_template, request, url_for, redirect, session, flash
+from calendarweb import app 
+
+#this is a cicrular dependency, the database needs to be imported before the app
+from calendarweb.models import User, Event
+
+from functools import wraps
+#relational database
+from calendarweb.forms import RegistrationForm, LoginForm
 #import the objects classes in the project directiory
-from Dictionary import Dictionary
-from ContentCreator import ContentCreator
-from LanguageParser import LanguageParser
-from DateDataManager import DateDataManager
+from calendarweb.Dictionary import Dictionary
+from calendarweb.ContentCreator import ContentCreator
+from calendarweb.LanguageParser import LanguageParser
+from calendarweb.DateDataManager import DateDataManager
 
-app = Flask(__name__)
-
-#create tword2numberhe objects for the classes in the project directory 
+#create tword2number objects for the classes in the project directory 
 WordDictionary = Dictionary()
 CommandInterpreter = LanguageParser()
 PostCreator = ContentCreator()
@@ -15,15 +21,11 @@ DataManager = DateDataManager()
 
 
 default = [{
-        'title': 'Input below or select a date',
+    'title': 'Input below or select a date',
 }]
 
-@app.route('/')
-def Home():
-    return render_template("timeline.html", dates=default)
-
 @app.route('/',methods=['POST', 'GET'])
-def InputCommand():
+def Home():
     if request.method == "POST":
         if request.form.get("command"):
             text = request.form['command']
@@ -39,8 +41,49 @@ def InputCommand():
             return redirect(url_for('viewdate',values=value))
         elif request.form.get("statistics"):
             return redirect(url_for('statistics'))
+    return render_template("timeline.html", dates=default)
+
+#Login required decorator
+def loginRequired(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if "loggedIn" in session:
+            return f(*args, **kwargs)
+        else:
+            flash("You need to login first", "danger")
+            return redirect(url_for("Login"))
+    return wrap
+
+@app.route('/login', methods=['POST', 'GET'])
+def Login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        if form.email.data == "admin@a.ca" and form.password.data == "admin":
+            flash("You have been logged in!", "success")
+            session["loggedIn"] = True
+            return redirect(url_for("Home"))
+        else:
+            flash("Login Unsuccessful. Please check username and password", "danger")
+    return render_template('login.html',form=form)
+
+@app.route('/register', methods=['POST', 'GET'])
+def Register():
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        flash(f'Account created for {form.username.data}', 'success')
+        session["loggedIn"] = True
+        return redirect(url_for('Home'))
+    else:
+        pass
+    return render_template('register.html',form=form)
+
+@app.route('/logout')
+def Logout():
+    session.pop("loggedIn", None)
+    return redirect(url_for('Home', dates=default, message="You have been logged out"))
         
 @app.route("/viewdate/<values>", methods=['GET', 'POST'])
+@loginRequired
 def viewdate(values):
     if request.method == "POST":
         if request.form.get("command"):
@@ -69,8 +112,11 @@ def viewdate(values):
     InputtedDate = values.split("-")
     dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
     
+    
     return render_template("timeline.html", dates=date, dateTitle=dateTitle)
+
 @app.route("/stats", methods=['GET', 'POST'])
+@loginRequired
 def statistics():
     if request.method == "POST":
         if request.form.get("command"):
@@ -88,11 +134,11 @@ def statistics():
     
     #get the hours from each activity using the data class
     ActivityMap = DataManager.findAmountOfEachActivityPerDay()
-    l = round(ActivityMap.get("leisure"),3)
-    w = round(ActivityMap.get("work"),3)
-    e = round(ActivityMap.get("exercise"),3)
-    n = round(ActivityMap.get("natural"),3)
-
+    li = round(ActivityMap.get("leisure"),2)
+    wi = round(ActivityMap.get("work"),2)
+    ei = round(ActivityMap.get("exercise"),2)
+    ni = round(ActivityMap.get("natural"),2)
+    
     #get the total amount of events per day
     Events = DataManager.findTotalEvents()
     TotalDays = DataManager.findTotalDays()
@@ -120,8 +166,6 @@ def statistics():
             hours = int(str(maxEventTime)[:l-2])
             TimeMaxOverlap = str(hours) + ":" + str(minutes) + " " + midday
         except:
-            TimeMaxOverlap = "All events have been deleted"
+            TimeMaxOverlap = "No Durational Events"
     #return all the data to the html page
-    return render_template("stats.html", l=l,w=w,e=e,n=n,Events=Events,EventsPerDay=EventsPerDay,maxEventTime=TimeMaxOverlap,maxEvents=maxEvents)
-if __name__ == "__main__":
-    app.run(debug=True)
+    return render_template("stats.html", l=li,w=wi,e=ei,n=ni,Events=Events,EventsPerDay=EventsPerDay,maxEventTime=TimeMaxOverlap,maxEvents=maxEvents)

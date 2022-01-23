@@ -1,5 +1,6 @@
-from LanguageParser import LanguageParser
-from DateDataManager import DateDataManager
+from re import S
+from calendarweb.LanguageParser import LanguageParser
+from calendarweb.DateDataManager import DateDataManager
 import random 
 lp = LanguageParser()
 dm = DateDataManager()
@@ -34,7 +35,8 @@ class ContentCreator:
             self.eventDuration = eventDuration
             if self.eventDuration == None:
                 self.eventDuration = 60
-        
+        if self.eventStartTime == 0:
+            self.eventDuration = 0
         #get the correct date for the post
         splitDate = self.eventDate.split("-")
         dateInput = self.createDate(int(splitDate[0]), splitDate[1], splitDate[2])

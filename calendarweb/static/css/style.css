@@ -154,8 +154,9 @@
   bottom: 10px;
   background-color: white;
   height: 40px;
-  width: 7vw;
-  font-size:25px;
+  width: 6vw;
+  font-size:22px;
+  right: 0;
   padding-left: 10px;
   border: none;
   left: 91%;
@@ -194,7 +195,9 @@
 }
 .todo-container
 {
+  position: relative;
   margin-top: 5vh;
+  right: 50%;  
 }
 .title-font
 {
@@ -203,7 +206,7 @@
 .grid-container 
 {
   display: grid;
-  grid-template-columns: 50% 35% 15%;
+  grid-template-columns: 50% 35% 10%;
 }
 .two-grid-container 
 {
@@ -335,7 +338,7 @@
 .description-text
 {
   font-size: calc(0.1rem + 0.8vw);
-  text-indent: 1.5rem;
+  margin-left: 3.5rem;
   text-align: left;
 }
 .fancy-stat
@@ -367,13 +370,50 @@
   color: rgb(0, 0, 0);
   font-size: 1.1rem;
 }
-.bar-graph p {
+.bar-graph p 
+{
   position: relative;
   top: 50%;
   transform: translate(0, -50%);
 }
+.centered-middle
+{
+  /* set the vertical alignment to middle and the horizontal alignment to the middle */
+  margin: 0;
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -40%);
 
+}
 .content-margin
 {
-  margin-top: calc(1vw + 2vh);
+  margin-top: calc(1vw + 1vh);
+}
+
+.input-field
+{
+  border-radius: 10px;
+  margin-top: 1rem;
+}
+
+.login-button
+{
+  position:relative;
+  top: 50%;
+  border-radius: 10px 10px 10px 10px;
+  border-color: black;
+  margin-top: 0.4rem;
+  margin-left: 5rem;
+  transform: translate(-50%, -50%);
+}
+.message-container
+{
+  width: 110%;
+}
+.error
+{
+  color: red;
+  font-size: 0.8rem;
+  margin-left: 5rem;
 }

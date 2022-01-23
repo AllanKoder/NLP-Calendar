@@ -1,8 +1,10 @@
+from functools import wraps
+from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 class DateDataManager():
     def __init__(self):
         self.dateData = {}
         self.colorData = {}
-        pass
     def addData(self, post):
         #add a post to the database using the date as the key and the post as the value, if the date does not exist, create it
         keyResult = self.dateData.get(post.get("date"))
