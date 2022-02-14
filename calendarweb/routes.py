@@ -1,8 +1,9 @@
+import bcrypt
 from flask import render_template, request, url_for, redirect, session, flash
 from calendarweb import app 
-
 #this is a cicrular dependency, the database needs to be imported before the app
 from calendarweb.models import User, Event
+from calendarweb import db
 
 from functools import wraps
 #relational database
@@ -20,31 +21,38 @@ PostCreator = ContentCreator()
 DataManager = DateDataManager()
 
 
-default = [{
+defaultInformation = [{
     'title': 'Input below or select a date',
 }]
 
 @app.route('/',methods=['POST', 'GET'])
 def Home():
+    loggedIn = "loggedIn" in session
+    username = session['username'] if loggedIn else None
     if request.method == "POST":
         if request.form.get("command"):
-            text = request.form['command']
-            #get the command from the user and add to the database
-            date = PostCreator.createPost(text)
-            dateKey = CommandInterpreter.getEventDate(PostCreator.cleanText(text))
-            DataManager.addData(date)
-            #get the date from the user and add to the database
-            #return str(DataManager.getWholeData())
-            return redirect(url_for('viewdate',values=dateKey))
+            if loggedIn:
+                text = request.form['command']
+                #get the command from the user and add to the database
+                date = PostCreator.createPost(text)
+                dateKey = CommandInterpreter.getEventDate(PostCreator.cleanText(text))
+                DataManager.addData(date,session.get("emailID"))
+                #get the date from the user and add to the database
+                #return str(DataManager.getWholeData())
+                return redirect(url_for('Viewdate',values=dateKey))
+            else:
+                flash("You need to login first", "danger")
+                return redirect(url_for("Login"))
         elif request.form.get("date"):
             value = request.form['date']
-            return redirect(url_for('viewdate',values=value))
-        elif request.form.get("statistics"):
-            return redirect(url_for('statistics'))
-    return render_template("timeline.html", dates=default)
+            return redirect(url_for('Viewdate',values=value))
+        elif request.form.get("Statistics"):
+            return redirect(url_for('Statistics',username=username))         
+    return render_template("timeline.html", dates=defaultInformation,username=username)
 
-#Login required decorator
-def loginRequired(f):
+#Login required decorator, can be any parameter you want
+def LoginRequired(f):
+    #this would be the function that is being decorated 
     @wraps(f)
     def wrap(*args, **kwargs):
         if "loggedIn" in session:
@@ -57,11 +65,16 @@ def loginRequired(f):
 @app.route('/login', methods=['POST', 'GET'])
 def Login():
     form = LoginForm()
-    if form.validate_on_submit():
-        if form.email.data == "admin@a.ca" and form.password.data == "admin":
-            flash("You have been logged in!", "success")
-            session["loggedIn"] = True
-            return redirect(url_for("Home"))
+    if form.validate_on_submit():   
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.checkpw(form.password.data.encode('utf-8') ,user.password):
+            #add all the session cookies for the website data to load throughout pages
+            session['loggedIn'] = True
+            session["emailID"] = form.email.data
+            session["username"] = User.query.filter_by(email=form.email.data).first().username
+            flash(f"You are now logged in, {user.username}", "success")
+            DataManager.setLocalData(session.get("emailID"))
+            return redirect(url_for('Home',username=session.get("username")))
         else:
             flash("Login Unsuccessful. Please check username and password", "danger")
     return render_template('login.html',form=form)
@@ -70,9 +83,16 @@ def Login():
 def Register():
     form = RegistrationForm()
     if form.validate_on_submit():
+        #hash the password and convert to a string 
+        hashed_password = bcrypt.hashpw(str(form.password.data).encode('utf8'), bcrypt.gensalt())
+        user = User(username=form.username.data, email=form.email.data, password=hashed_password)
+        db.session.add(user)
+        db.session.commit()
         flash(f'Account created for {form.username.data}', 'success')
         session["loggedIn"] = True
-        return redirect(url_for('Home'))
+        session["emailID"] = form.email.data
+        session["username"] = User.query.filter_by(email=form.email.data).first().username
+        return redirect(url_for('Home',username=session.get("username")))
     else:
         pass
     return render_template('register.html',form=form)
@@ -80,57 +100,60 @@ def Register():
 @app.route('/logout')
 def Logout():
     session.pop("loggedIn", None)
-    return redirect(url_for('Home', dates=default, message="You have been logged out"))
+    session.pop("emailID", None)
+    session.pop("username", None)
+    flash('You have logged out!', 'success')
+    return redirect(url_for('Home'))
         
-@app.route("/viewdate/<values>", methods=['GET', 'POST'])
-@loginRequired
-def viewdate(values):
+@app.route("/Viewdate/<values>", methods=['GET', 'POST'])
+@LoginRequired
+def Viewdate(values):
     if request.method == "POST":
         if request.form.get("command"):
             text = request.form['command']
             
             date = PostCreator.createPost(text)
             dateKey = CommandInterpreter.getEventDate(PostCreator.cleanText(text))
-            DataManager.addData(date)
+            DataManager.addData(date, session.get("emailID"))
             InputtedDate = dateKey.split("-")
             dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
-            return render_template("timeline.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
+            return render_template("timeline.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle,username=session.get("username"))
         elif request.form.get("date"):
             value = request.form['date']
-            return redirect(url_for('viewdate',values=value))
+            return redirect(url_for('Viewdate',values=value,username=session.get("username")))
         elif request.form.get("delete"):
             IDvalue = request.form['delete']
-            DataManager.deleteData(values, IDvalue)
+            DataManager.deleteData(values, IDvalue, session.get("emailID"))
             #return str(DataManager.getWholeData())
-            return redirect(url_for('viewdate',values=values))
-        elif request.form.get("statistics"):
-            return redirect(url_for('statistics'))
+            return redirect(url_for('Viewdate',values=values,username=session.get("username")))
+        elif request.form.get("Statistics"):
+            return redirect(url_for('Statistics',username=session.get("username")))
         
     date = DataManager.getDate(values)
     if date is None:
-        date = default
+        date = defaultInformation
     InputtedDate = values.split("-")
     dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
     
     
-    return render_template("timeline.html", dates=date, dateTitle=dateTitle)
+    return render_template("timeline.html", dates=date, dateTitle=dateTitle,username=session.get("username"))
 
 @app.route("/stats", methods=['GET', 'POST'])
-@loginRequired
-def statistics():
+@LoginRequired
+def Statistics():
     if request.method == "POST":
         if request.form.get("command"):
             text = request.form['command']
             
             date = PostCreator.createPost(text)
             dateKey = CommandInterpreter.getEventDate(PostCreator.cleanText(text))
-            DataManager.addData(date)
+            DataManager.addData(date,session["usernameID"])
             InputtedDate = dateKey.split("-")
             dateTitle = PostCreator.createDate(int(InputtedDate[0]), InputtedDate[1], InputtedDate[2])
-            return render_template("timeline.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle)
+            return render_template("timeline.html", dates=DataManager.getDate(dateKey),dateTitle=dateTitle,username=session.get("username"))
         elif request.form.get("date"):
             value = request.form['date']
-            return redirect(url_for('viewdate',values=value))
+            return redirect(url_for('Viewdate',values=value,username=session.get("username")))
     
     #get the hours from each activity using the data class
     ActivityMap = DataManager.findAmountOfEachActivityPerDay()

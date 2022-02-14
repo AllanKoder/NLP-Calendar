@@ -11,10 +11,21 @@ WordDictionary = Dictionary()
 class LanguageParser:
     #algorithm order: remove all the weird punctuation, filter the numbers, time, classify the command, filter the stopwords, filter the words, filter the words in the dictionary
     def __init__(self) -> None:
-        self.data = pd.read_csv("calendarweb\KeyWordsData.csv")
+        self.keywordsData = pd.read_csv("calendarweb\KeyWordsData.csv")
+        self.uncaptilizedWords = {"a":True,"an":True,"for":True,"of":True,"and":True,"on":True,"in":True,"at":True,"with":True,"the":True}
+    def CapitalizeTitle(self, text):
+        #split the text into words
+        textArray = text.split(" ")
+        textArray[0] = textArray[0].capitalize()
+        #if the word is uncaptilized, then capitalize it
+        #but if the word is in the uncaptilized list, then don't capitalize it
+        for index, word in enumerate(textArray[1::]):
+            if not self.uncaptilizedWords.get(word.lower()):
+                textArray[index+1] = word.capitalize()        
+        return (" ".join(textArray))
     def classifyActivity(self, text, catagories):
         #get the text in the csv file
-        classData = self.data[self.data[catagories].notna()]
+        classData = self.keywordsData[self.keywordsData[catagories].notna()]
         classData[catagories]=classData[catagories].astype(str)
 
         classKeywords = [""]*len(catagories)
@@ -41,17 +52,6 @@ class LanguageParser:
         output = str(catagories[classScores.index(max(classScores))]).lower()
         return output
 
-    def CapitalizeTitle(self, text):
-        #split the text into words
-        textArray = text.split(" ")
-        textArray[0] = textArray[0].capitalize()
-        uncaptilizedWords = {"a":True,"an":True,"for":True,"of":True,"and":True,"on":True,"in":True,"at":True,"with":True,"the":True}
-        #if the word is uncaptilized, then capitalize it
-        #but if the word is in the uncaptilized list, then don't capitalize it
-        for index, word in enumerate(textArray[1::]):
-            if not uncaptilizedWords.get(word.lower()):
-                textArray[index+1] = word.capitalize()        
-        return (" ".join(textArray))
     def depthBagOfWords(self, text, depth):
         if depth == 0:
             return text

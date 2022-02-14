@@ -1,6 +1,5 @@
 from PyDictionary import PyDictionary
 class Dictionary:
-    dictionary=PyDictionary()
     #create functions for each command type
     def __init__(self):
         self.dictionary = PyDictionary()

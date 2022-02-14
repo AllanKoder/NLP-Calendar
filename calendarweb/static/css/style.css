@@ -148,18 +148,19 @@
   font-size: 13px;
   text-indent: 0.5rem;
 }
-.statistics
+.navbar-align-button
 {
-  position: absolute;
-  bottom: 10px;
-  background-color: white;
-  height: 40px;
-  width: 6vw;
-  font-size:22px;
-  right: 0;
-  padding-left: 10px;
-  border: none;
-  left: 91%;
+  height: 25%;
+  width: 100%;
+  margin-top: 35%;
+}
+.button-text
+{
+  margin: 0;
+  position: relative;
+  right: 1.8rem;
+  font-size:1rem;
+  text-align: center;
 }
 /* make the input prompt to be on the left side of the screen*/
 .command-result-1
@@ -215,17 +216,38 @@
   margin-left: 3px;
 
 }
-.content-button
+.navbar-button
 {
-  width: 100%;
-  height: 100%;
+  position: relative;
+  margin: 0;
+  width: 30%;
+  left: 13%;
+  -moz-box-sizing: border-box; 
+  box-sizing: border-box;
+  padding: 10% 40%;
   border: none;
-  outline: 1.3px solid rgb(32, 32, 32);
   cursor: pointer;
-  font-size: 1.2rem;
-  text-shadow: 0px 0px 10px 0px rgba(0,0,0,0.75);
-  background-color: white;
+  background-color: rgba(0, 0, 0, 0);
+  outline: 1px solid rgb(224, 224, 224);
+  border-radius: 10px;
+  box-sizing: border-box;
+  transition-duration: 0.5s;
 }
+.navbar-button a
+{
+  text-decoration: none;
+  font-size: 1rem;
+  color: rgb(224, 224, 224);
+}
+.navbar-button:hover 
+{
+  background-color: rgb(255, 255, 255);
+}
+.navbar-button:hover a
+{
+  color: rgb(0, 0, 0);
+}
+
 .timeline-measurement
 {
   margin-top: 10vh;
@@ -390,13 +412,35 @@
 {
   margin-top: calc(1vw + 1vh);
 }
-
 .input-field
 {
   border-radius: 10px;
   margin-top: 1rem;
 }
-
+.navbar-text
+{
+  color: white;
+  margin: 9px;
+}
+.right-navbar
+{
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 7%;
+  margin: 0px;
+  overflow-x: hidden;
+  height: 100%;
+  background-color: rgba(26,29,31);
+  z-index: 10;
+  display: grid;
+  grid-column-gap: 1vw;
+  align-content:start;
+}
+.navbar-button-margin
+{
+  margin-top: 2vh;
+}
 .login-button
 {
   position:relative;

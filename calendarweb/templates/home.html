@@ -43,14 +43,34 @@
             <input name = "command" class = "input-command"  placeholder="">
          </form>
          <button type="button" onclick="informationPrompt()" class = "helpbutton"><strong>&#x24D8;</strong></button>          
-         <form method="POST">
-            <div class = "statistics">
-               <input class = "content-button" type="submit" name="statistics" value="statistics">
-            </div>
-         </form>
       </div>
       {% block rightSideContent %}
       {% endblock rightSideContent %}
+      <div class = "right-navbar">
+         <div class = "navbar-align-button">
+            <div class = "navbar-button">
+               <a class = "button-text" href="/stats">Statistics</a>
+            </div>
+         </div>
+         <div class = "navbar-align-button">
+            <div class = "navbar-button">
+               <a class = "button-text" href="/login">Login</a>
+            </div>
+         </div>
+         <div class = "navbar-align-button">
+            <div class = "navbar-button">
+               <a class = "button-text" href="/register">Register</a>
+            </div>
+         </div>
+         <div class = "navbar-align-button">
+            <div class = "navbar-button">
+               <a class = "button-text" href="/logout">Logout</a>
+            </div>
+         </div>
+         {% if username %}
+            <p class = "navbar-text">You are logged in as {{ username }}</p>
+         {% endif %}
+      </div>
    </div>
 </div>
 <script src="{{ url_for('static', filename='js/CalendarScript.js') }}"></script>

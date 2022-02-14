@@ -1,11 +1,13 @@
 from functools import wraps
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
+from calendarweb import db
+from calendarweb.models import User, Event 
 class DateDataManager():
     def __init__(self):
         self.dateData = {}
         self.colorData = {}
-    def addData(self, post):
+    def addData(self, post, emailID):
         #add a post to the database using the date as the key and the post as the value, if the date does not exist, create it
         keyResult = self.dateData.get(post.get("date"))
         if keyResult is not None:
@@ -15,9 +17,37 @@ class DateDataManager():
             #add a new date to the database
             self.dateData[post.get("date")] = [post]
             self.colorData[post.get("date")] = {post.get("color"):True}
+        #get the id for the user by their unique username 
+        userID = User.query.filter_by(email=emailID).first().id
+        event = Event(userID=userID, title=post.get("title"), type=post.get("type"), date=post.get("date"), time=post.get("time"), duration=post.get("duration"), activityClass=post.get("class"), color=post.get("color"))
+        #add the data to the database and assign a specific key to the user id
+        db.session.add(event)
+        db.session.commit()
+    def setLocalData(self, emailID):
+        userID = User.query.filter_by(email=emailID).first().id
+        eventsData = Event.query.filter_by(userID=userID).all()
+        #make the master dictionary for the date data        
+        for event in eventsData:
+            eventData = {
+                "title": event.title,
+                "type": event.type,
+                "time": event.time,
+                "duration": event.duration,
+                "date": event.date,
+                "color": event.color,
+                "class": event.activityClass
+            }
+            if self.dateData.get(event.date) is None:
+                self.dateData[event.date] = [eventData]
+            else:
+                self.dateData[event.date].append(eventData)
+            if self.colorData.get(event.date) is None:
+                self.colorData[event.date] = {event.color:True}
+            else:
+                self.colorData[event.date][event.color] = True
     def getDate(self, date):
         return self.dateData.get(date)
-    def deleteData(self, date, ID):
+    def deleteData(self, date, ID, emailID):
         #delete a post from the database using the unique color as the ID and the date as the key
         listOfEvents = self.dateData.get(date)
         if listOfEvents is not None:
@@ -25,6 +55,10 @@ class DateDataManager():
                 if i.get("color") == ID:
                     listOfEvents.remove(i)
                     break
+            userID = User.query.filter_by(email=emailID).first().id  
+            deleteEvent = Event.query.filter_by(userID=userID, date=date, color=ID).first()
+            db.session.delete(deleteEvent)
+            db.session.commit()
             self.colorData[date][ID] = False
                 
     def colorUsed(self, date, color):
@@ -33,7 +67,7 @@ class DateDataManager():
             return False
         return self.colorData.get(date).get(color)
     def getWholeData(self):
-        #return the entire database
+        #return the entire database for testing purposes
         return str(self.dateData) + str(self.colorData)
     def findTotalEvents(self):
         # find the total amount of events in the database

@@ -1,4 +1,8 @@
-from calendarweb import db
+from calendarweb import db, loginManager
+
+@loginManager.user_loader
+def loadUser(userID):
+    return User.query.get(int(userID))
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -15,9 +19,10 @@ class Event(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     type = db.Column(db.String(100), nullable=False)
+    time = db.Column(db.String(100), nullable=True)
     duration = db.Column(db.Float, nullable=False)
     date = db.Column(db.String(12), nullable=False)
     color = db.Column(db.String(22), nullable=False)
     activityClass = db.Column(db.String(30), nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    userID = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     
