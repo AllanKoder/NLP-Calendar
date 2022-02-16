@@ -53,6 +53,7 @@ class LanguageParser:
         return output
 
     def depthBagOfWords(self, text, depth):
+        #recursion to get all the words in the text and their definitions and definitions of definitions until the depth is reached
         if depth == 0:
             return text
         else:

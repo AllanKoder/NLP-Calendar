@@ -76,7 +76,8 @@ class DateDataManager():
             total += len(self.dateData[i])
         return total
     def findAmountOfEachActivityPerDay(self):
-        #find the amount of each activity in the database and return a dictionary with the activity as the key and the amount as the value
+        #find the amount of each activity in the database  
+        #return a dictionary with the activity as the key and the amount as the value
         totalTimes = {"leisure":0, "work":0, "natural":0, "exercise":0}
         amountOfDays = len(self.dateData)
         if amountOfDays == 0:

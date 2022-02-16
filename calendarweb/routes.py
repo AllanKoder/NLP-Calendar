@@ -191,4 +191,4 @@ def Statistics():
         except:
             TimeMaxOverlap = "No Durational Events"
     #return all the data to the html page
-    return render_template("stats.html", l=li,w=wi,e=ei,n=ni,Events=Events,EventsPerDay=EventsPerDay,maxEventTime=TimeMaxOverlap,maxEvents=maxEvents)
+    return render_template("stats.html", l=2,w=1,e=5,n=2,Events=Events,EventsPerDay=EventsPerDay,maxEventTime=TimeMaxOverlap,maxEvents=maxEvents)
