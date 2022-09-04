@@ -10,5 +10,5 @@ It can classify:
 Documentation: 
 shorturl.at/bmoZ7
 
-![Screenshot 2022-09-03 210417](https://user-images.githubusercontent.com/74692833/188295539-eafa9b49-f90b-4f76-bd2d-1a373f623513.png)
 ![Screenshot 2022-09-03 210910](https://user-images.githubusercontent.com/74692833/188295537-60a495b6-97b7-420f-8510-81414d964109.png)
+![Screenshot 2022-09-03 210417](https://user-images.githubusercontent.com/74692833/188295539-eafa9b49-f90b-4f76-bd2d-1a373f623513.png)
