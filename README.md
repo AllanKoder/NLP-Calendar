@@ -7,8 +7,7 @@ It can classify:
 * todo, events or reminders
 * text in any format, ex: alarm at 4pm. Exercise from the morning to noon
 
-Documentation: 
-[shorturl.at/bmoZ7](https://drive.google.com/drive/folders/13ZNd0skzRcid3AMGugShjxF5UMFWXTmL?usp=sharing)
+[Documentation](https://drive.google.com/drive/folders/13ZNd0skzRcid3AMGugShjxF5UMFWXTmL?usp=sharing)
 
 ![Screenshot 2022-09-03 210910](https://user-images.githubusercontent.com/74692833/188295537-60a495b6-97b7-420f-8510-81414d964109.png)
 ![Screenshot 2022-09-03 210417](https://user-images.githubusercontent.com/74692833/188295539-eafa9b49-f90b-4f76-bd2d-1a373f623513.png)
